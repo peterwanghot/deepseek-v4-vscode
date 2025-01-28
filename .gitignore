@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.vsix
+.vscode/
+.vscode-test/
+.vscode-test-insiders/
+.vscode-insiders/
+.vscode-exploration/
+.vscode-exploration-insiders/
+.vscode-remote/
+.vscode-remote-insiders/
+.vscode-remote-exploration/
+.vscode-remote-exploration-insiders/
+.vscode-test-web/

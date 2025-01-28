@@ -1,0 +1,107 @@
+{
+  "name": "deepseek-code-generator",
+  "displayName": "DeepSeek Code Generator",
+  "description": "Generate code using DeepSeek AI",
+  "version": "1.1.7",
+  "author": "David Dai",
+  "publisher": "DavidDai",
+  "icon": "media/deepseek-color-128.png",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "main": "./out/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "deepseek.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Enter your API key for DeepSeek."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "deepseekContainer",
+          "title": "DeepSeek",
+          "icon": "media/deepseek.svg",
+          "when": "view == deepseekContainer"
+        }
+      ]
+    },
+    "views": {
+      "deepseekContainer": [
+        {
+          "id": "deepseekView",
+          "name": "DeepSeek",
+          "type": "webview",
+          "contextualTitle": "DeepSeek"
+        }
+      ],
+      "explorer": [
+        {
+          "id": "deepseekExplorer",
+          "name": "DeepSeek"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "extension.openDeepseekApiKeySettings",
+          "group": "navigation",
+          "when": "view == deepseekView"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "extension.openDeepseekApiKeySettings",
+        "title": "Set DeepSeek API Key",
+        "category": "DeepSeek",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "extension.deekseek",
+        "title": "Chat with DeepSeek",
+        "category": "DeepSeek"
+      },
+      {
+        "command": "extension.toggleToDeepseekView",
+        "title": "Toggle to DeepSeek View",
+        "category": "DeepSeek"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.deekseek",
+        "key": "ctrl+alt+t",
+        "mac": "cmd+shift+t",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.toggleToDeepseekView",
+        "key": "ctrl+alt+v",
+        "mac": "cmd+shift+v"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "test": "npm run compile && node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.12.0",
+    "@types/vscode": "~1.75.0",
+    "eslint": "^8.0.1",
+    "typescript": "~5.6.2"
+  }
+}
