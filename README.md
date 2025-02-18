@@ -34,7 +34,9 @@
 
 ## 配置
 
-如果插件需要配置，列出如何配置插件。
+第一次使用会让填写apiKey，建议使用火山引擎，目前最稳定的api调用厂商。
+
+![image](https://i.111666.best/image/ZCxH9Ls2PBfGosxxH8193V.png)
 
 ```json
 {
@@ -44,11 +46,51 @@
 
 ## API key 申请
 
-访问 [https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys "申请API") 进行申请。
+### 由于目前ds官方已经不能申请api调用,因此设置火山引擎API为默认调用方式
+
+### deepseek
+
+[https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys "申请API")
+
+### siliconflow 硅基流动
+
+**注册:**
+
+[**https://cloud.siliconflow.cn/i/Uw8MJek7**](https://cloud.siliconflow.cn/i/Uw8MJek7)
+
+**申请API key:**
+
+**[https://cloud.siliconflow.cn/account/ak](https://cloud.siliconflow.cn/account/ak)**
+
+### volceengine 火山引擎 目前最稳定的API
+
+**注册:**
+
+https://console.volcengine.com/ark/region:ark+cn-beijing/experience/chat
+
+点击api接入 再点击确认接入
+
+**申请API key**
+
+[https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)
+
+点击 API调用, 在新页面 找到 '选择 API Key 并复制' 并点击
 
 ### 支持
 
-**Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
+#### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
+
+#### 微信
+
+![image](https://i.111666.best/image/4emw83S75jILsJtuybd2ov.png)
+
+#### 打赏通道
+
+![image](https://i.111666.best/image/RCob7GIR7viigc785RHgKh.png)
+
+#### 惊喜预告
+
+本月底会上线一个deepseek 满血版 API 调用渠道，敬请期待！
 
 # DeepSeek Code Generator
 
@@ -85,9 +127,7 @@ If the plugin has keyboard shortcuts, list them here. For example:
 - `Ctrl/Cmd+Shift+t`: Open the Command Palette and ask DeepSeek questions.
 
 ## Configuration
-
-If the plugin requires configuration, specify how to configure it.
-
+![image](https://i.111666.best/image/ZCxH9Ls2PBfGosxxH8193V.png)
 ```json
 {
   "deepseek.apiKey": "your-api-key-here"
@@ -100,4 +140,22 @@ Visit [https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api
 
 ### Support
 
-Email： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
+#### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
+
+#### Telegram
+
+![image](https://i.111666.best/image/YNFNyIqBP6OXSjAriY3Mk1.png)
+
+#### Tg Group
+
+![image](https://i.111666.best/image/y1HINyrJjcUyJodDJ1tFxY.png)
+
+#### Buy me a coffee
+
+![image](https://i.111666.best/image/50L1eDAhyiWuLUB58j50oq.png)
+
+**My USDT(TRON) Address:TWPocwazdrucz53DDHSTYk8ZZK9aTViw3P**
+
+![image](https://i.111666.best/image/ozGOA21J830HBnPardWTTa.png)
+
+**My Paypal: <dai.david2005@gmail.com>**

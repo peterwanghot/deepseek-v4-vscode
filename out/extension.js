@@ -17,6 +17,75 @@ const os = require("os"); // 引入 os 模块
 // import { v4 as uuidv4 } from './uuid';
 let curUUID = '';
 let stopRequest = false;
+const apiDeepseekV3URL = 'https://api.deepseek.com/beta/completions';
+const apiDeepseekV3SiliconflowURL = 'https://api.siliconflow.cn/v1/chat/completions';
+const apiDeepseekV3VolcengineURL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+function getDeepSeekRequestURL() {
+    const apiKeyType = vscode.workspace.getConfiguration('deepseek').get('provider');
+    if (apiKeyType === 'deepseek') {
+        return apiDeepseekV3URL;
+    }
+    else if (apiKeyType === 'siliconflow') {
+        return apiDeepseekV3SiliconflowURL;
+    }
+    else if (apiKeyType === 'volcengine') {
+        return apiDeepseekV3VolcengineURL;
+    }
+    else {
+        return apiDeepseekV3URL;
+    }
+}
+;
+function getModelRequestConfig(prompt = '') {
+    const provider = vscode.workspace.getConfiguration('deepseek').get('provider');
+    if (provider === 'deepseek') {
+        return {
+            model: 'deepseek-chat',
+            prompt: prompt,
+            max_tokens: 1280,
+            temperature: 0,
+            stream: true
+        };
+    }
+    else if (provider === 'siliconflow') {
+        return { model: "deepseek-ai/DeepSeek-V3", messages: [{ role: "user", content: prompt }], stream: true, max_tokens: 1280, stop: ["null"], temperature: 0.7, top_p: 0.7, top_k: 50, frequency_penalty: 0.5, n: 1, response_format: { "type": "text" }, tools: [{ type: "function", function: { description: "<string>", name: "<string>", parameters: {}, strict: false } }] };
+    }
+    else if (provider === 'volcengine') {
+        return {
+            model: 'ep-20250218142437-9k5tv',
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 512,
+            temperature: 0,
+            stream: true
+        };
+    }
+    else {
+        return {
+            model: 'deepseek-chat',
+            prompt: prompt,
+            max_tokens: 1280,
+            temperature: 0,
+            stream: true
+        };
+    }
+}
+;
+function getModelResponseContent(jsonData) {
+    var _a, _b, _c;
+    const provider = vscode.workspace.getConfiguration('deepseek').get('provider');
+    if (provider === 'deepseek') {
+        return ((_a = jsonData.choices[0]) === null || _a === void 0 ? void 0 : _a.text) || '';
+    }
+    else if (provider === 'siliconflow') {
+        return jsonData.choices[0].message.content || '';
+    }
+    else if (provider === 'volcengine') {
+        return ((_c = (_b = jsonData.choices[0]) === null || _b === void 0 ? void 0 : _b.delta) === null || _c === void 0 ? void 0 : _c.content) || '';
+    }
+    else {
+        return jsonData.choices[0].text;
+    }
+}
 // 获取 deepseek 回复 非流式
 function getDeepSeekResponseNoStream(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -25,18 +94,13 @@ function getDeepSeekResponseNoStream(prompt) {
         console.log('DeepSeek 请求开始');
         curUUID = crypto.randomUUID();
         try {
-            const response = yield fetch('https://api.deepseek.com/beta/completions', {
+            const response = yield fetch(getDeepSeekRequestURL(), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    model: "deepseek-chat",
-                    prompt: prompt,
-                    max_tokens: 1280,
-                    temperature: 0,
-                })
+                body: JSON.stringify(getModelRequestConfig(prompt))
             });
             const data = yield response.json();
             const fullResponse = ((_a = data.choices[0]) === null || _a === void 0 ? void 0 : _a.text) || '';
@@ -51,26 +115,20 @@ function getDeepSeekResponseNoStream(prompt) {
 // 获取 DeepSeek 回复
 function getDeepSeekResponse(viewProvider, prompt, onProgress) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b;
+        var _a;
         const apiKey = vscode.workspace.getConfiguration('deepseek').get('apiKey');
         console.log('DeepSeek 请求开始');
         viewProvider.showLoading(true);
         curUUID = crypto.randomUUID();
         let fullResponse = '';
         try {
-            const response = yield fetch('https://api.deepseek.com/beta/completions', {
+            const response = yield fetch(getDeepSeekRequestURL(), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    model: "deepseek-chat",
-                    prompt: prompt,
-                    max_tokens: 1280,
-                    temperature: 0,
-                    stream: true
-                })
+                body: JSON.stringify(getModelRequestConfig(prompt))
             });
             const reader = (_a = response.body) === null || _a === void 0 ? void 0 : _a.getReader();
             const decoder = new TextDecoder();
@@ -81,18 +139,39 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
                 const chunk = decoder.decode(value);
                 const lines = chunk.split('\n').filter(line => line.trim() !== '');
                 for (const line of lines) {
-                    if (line.includes('[DONE]'))
+                    if (line.includes('error') || line.includes('50501')) {
+                        const jsonData = JSON.parse(line);
+                        if (jsonData.error) {
+                            fullResponse += '\n\nRequest error:' + jsonData.error.message;
+                            console.error('Request error:', jsonData.error.message);
+                            vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.error.message);
+                        }
+                        else if (jsonData.message) {
+                            fullResponse += '\n\nRequest error:' + jsonData.message;
+                            console.error('Request error:', jsonData.message);
+                            vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.message);
+                        }
+                        else {
+                            fullResponse += '\n\nRequest error:' + JSON.stringify(jsonData);
+                            console.error('Request error:', jsonData);
+                            vscode.window.showErrorMessage('DeepSeek Code Generator:' + JSON.stringify(jsonData));
+                        }
+                        onProgress(fullResponse);
                         break;
+                    }
+                    if (line.includes('[DONE]')) {
+                        break;
+                    }
                     if (line.startsWith('data: ')) {
                         const jsonData = JSON.parse(line.slice(6));
-                        const text = ((_b = jsonData.choices[0]) === null || _b === void 0 ? void 0 : _b.text) || '';
+                        const text = getModelResponseContent(jsonData);
                         fullResponse += text;
                         if (stopRequest) {
                             fullResponse += '\n\nUser stop request';
                             onProgress(fullResponse);
                             stopRequest = false;
                             reader === null || reader === void 0 ? void 0 : reader.cancel();
-                            return;
+                            break;
                         }
                         onProgress(fullResponse);
                     }
@@ -115,13 +194,25 @@ function activate(context) {
     // 获取设置中的 API 密钥
     const apiKey = vscode.workspace.getConfiguration('deepseek').get('apiKey');
     if (!apiKey) {
-        vscode.window.showInformationMessage('DeepSeek API 密钥未设置。点击这里设置。', { modal: true }, '打开设置').then((selection) => {
-            if (selection === '打开设置') {
+        vscode.window.showInformationMessage('API keys are not set. Click here to set.', { modal: true }, 'Open Settings').then((selection) => {
+            if (selection === 'Open Settings') {
                 // 打开设置界面，让用户设置 API 密钥
-                vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek.apiKey');
+                vscode.commands.executeCommand('workbench.action.openSettings', 'Deepseek');
             }
         });
     }
+    // if (!apiKeyDeepseek) {
+    // 	vscode.window.showInformationMessage(
+    // 		'DeepSeek API 密钥未设置。点击这里设置。',
+    // 		{ modal: true },
+    // 		'打开设置'
+    // 	).then((selection) => {
+    // 		if (selection === '打开设置') {
+    // 			// 打开设置界面，让用户设置 API 密钥
+    // 			vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek.apiKey');
+    // 		}
+    // 	});
+    // }
     console.log('DeepSeek 插件注册Webview视图');
     const viewProvider = new DeepSeekWebviewProvider(context);
     vscode.window.registerWebviewViewProvider('deepseekView', viewProvider);
@@ -155,7 +246,7 @@ function activate(context) {
     console.log('DeepSeek 插件注册打开 API 密钥设置的命令');
     let openApiKeySettings = vscode.commands.registerCommand('extension.openDeepseekApiKeySettings', () => {
         // 打开 VS Code 设置页面
-        vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek.apiKey');
+        vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek');
     });
     // 添加视图到活动栏
     const view = vscode.window.createTreeView('deepseekExplorer', {
@@ -178,7 +269,8 @@ function activate(context) {
         if (event.affectsConfiguration('deepseek.apiKey')) {
             const apiKey = vscode.workspace.getConfiguration('deepseek').get('apiKey');
             if (apiKey) {
-                vscode.window.showInformationMessage('DeepSeek API Key Update！');
+                const apiKeyType = vscode.workspace.getConfiguration('deepseek').get('provider');
+                vscode.window.showInformationMessage(apiKeyType + ' API Key Update！');
             }
         }
     });

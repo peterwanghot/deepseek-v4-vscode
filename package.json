@@ -2,7 +2,7 @@
   "name": "deepseek-code-generator",
   "displayName": "DeepSeek Code Generator",
   "description": "Generate code using DeepSeek AI",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "author": "David Dai",
   "publisher": "DavidDai",
   "icon": "media/deepseek-color-128.png",
@@ -17,10 +17,20 @@
     "configuration": {
       "type": "object",
       "properties": {
+        "deepseek.provider": {
+          "type": "string",
+          "enum": [
+            "deepseek",
+            "volcengine",
+            "siliconflow"
+          ],
+          "default": "volcengine",
+          "description": "Select API provider"
+        },
         "deepseek.apiKey": {
           "type": "string",
           "default": "",
-          "description": "Enter your API key for DeepSeek."
+          "description": "Input API key"
         }
       }
     },

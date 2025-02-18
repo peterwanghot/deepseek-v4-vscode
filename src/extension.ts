@@ -6,24 +6,80 @@ import * as os from 'os';  // 引入 os 模块
 let curUUID = '';
 let stopRequest = false;
 
+const apiDeepseekV3URL = 'https://api.deepseek.com/beta/completions';
+const apiDeepseekV3SiliconflowURL = 'https://api.siliconflow.cn/v1/chat/completions';
+const apiDeepseekV3VolcengineURL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+
+function getDeepSeekRequestURL() {
+	const apiKeyType = vscode.workspace.getConfiguration('deepseek').get<string>('provider');
+	if (apiKeyType === 'deepseek') {
+		return apiDeepseekV3URL;
+	} else if (apiKeyType === 'siliconflow') {
+		return apiDeepseekV3SiliconflowURL;
+	} else if (apiKeyType === 'volcengine') {
+		return apiDeepseekV3VolcengineURL;
+	} else {
+		return apiDeepseekV3URL;
+	}
+};
+
+function getModelRequestConfig(prompt: string = '') {
+	const provider = vscode.workspace.getConfiguration('deepseek').get<string>('provider');
+	if (provider === 'deepseek') {
+		return {
+			model: 'deepseek-chat',
+			prompt: prompt,
+			max_tokens: 1280,
+			temperature: 0,
+			stream: true
+		};
+	} else if (provider === 'siliconflow') {
+		return { model: "deepseek-ai/DeepSeek-V3", messages: [{ role: "user", content: prompt }], stream: true, max_tokens: 1280, stop: ["null"], temperature: 0.7, top_p: 0.7, top_k: 50, frequency_penalty: 0.5, n: 1, response_format: { "type": "text" }, tools: [{ type: "function", function: { description: "<string>", name: "<string>", parameters: {}, strict: false } }] };
+	} else if (provider === 'volcengine') {
+		return {
+			model: 'ep-20250218142437-9k5tv',
+			messages: [{ role: "user", content: prompt }],
+			max_tokens: 512,
+			temperature: 0,
+			stream: true
+		};
+	} else {
+		return {
+			model: 'deepseek-chat',
+			prompt: prompt,
+			max_tokens: 1280,
+			temperature: 0,
+			stream: true
+		};
+	}
+};
+
+function getModelResponseContent(jsonData: any) {
+	const provider = vscode.workspace.getConfiguration('deepseek').get<string>('provider');
+	if (provider === 'deepseek') {
+		return jsonData.choices[0]?.text || '';
+	} else if (provider === 'siliconflow') {
+		return jsonData.choices[0].message.content || '';
+	} else if (provider === 'volcengine') {
+		return jsonData.choices[0]?.delta?.content || '';
+	} else {
+		return jsonData.choices[0].text;
+	}
+}
+
 // 获取 deepseek 回复 非流式
 async function getDeepSeekResponseNoStream(prompt: string) {
 	const apiKey = vscode.workspace.getConfiguration('deepseek').get<string>('apiKey');
 	console.log('DeepSeek 请求开始');
 	curUUID = crypto.randomUUID();
 	try {
-		const response = await fetch('https://api.deepseek.com/beta/completions', {
+		const response = await fetch(getDeepSeekRequestURL(), {
 			method: 'POST',
 			headers: {
 				'Authorization': `Bearer ${apiKey}`,
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({
-				model: "deepseek-chat",
-				prompt: prompt,
-				max_tokens: 1280,
-				temperature: 0,
-			})
+			body: JSON.stringify(getModelRequestConfig(prompt))
 		});
 		const data = await response.json();
 		const fullResponse = (data as any).choices[0]?.text || '';
@@ -43,19 +99,13 @@ async function getDeepSeekResponse(viewProvider: DeepSeekWebviewProvider, prompt
 	let fullResponse = '';
 
 	try {
-		const response = await fetch('https://api.deepseek.com/beta/completions', {
+		const response = await fetch(getDeepSeekRequestURL(), {
 			method: 'POST',
 			headers: {
 				'Authorization': `Bearer ${apiKey}`,
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({
-				model: "deepseek-chat",
-				prompt: prompt,
-				max_tokens: 1280,
-				temperature: 0,
-				stream: true
-			})
+			body: JSON.stringify(getModelRequestConfig(prompt))
 		});
 
 		const reader = response.body?.getReader();
@@ -69,10 +119,32 @@ async function getDeepSeekResponse(viewProvider: DeepSeekWebviewProvider, prompt
 			const lines = chunk.split('\n').filter(line => line.trim() !== '');
 
 			for (const line of lines) {
-				if (line.includes('[DONE]')) break;
+				if (line.includes('error') || line.includes('50501')) {
+					const jsonData = JSON.parse(line);
+					if (jsonData.error) {
+						fullResponse += '\n\nRequest error:' + jsonData.error.message;
+						console.error('Request error:', jsonData.error.message);
+						vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.error.message);
+					} else if (jsonData.message) {
+						fullResponse += '\n\nRequest error:' + jsonData.message;
+						console.error('Request error:', jsonData.message);
+						vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.message);
+					} else {
+						fullResponse += '\n\nRequest error:' + JSON.stringify(jsonData);
+						console.error('Request error:', jsonData);
+						vscode.window.showErrorMessage('DeepSeek Code Generator:' + JSON.stringify(jsonData));
+					}
+
+					onProgress(fullResponse);
+
+					break;
+				}
+				if (line.includes('[DONE]')) {
+					break;
+				}
 				if (line.startsWith('data: ')) {
 					const jsonData = JSON.parse(line.slice(6));
-					const text = jsonData.choices[0]?.text || '';
+					const text = getModelResponseContent(jsonData);
 					fullResponse += text;
 
 					if (stopRequest) {
@@ -80,10 +152,11 @@ async function getDeepSeekResponse(viewProvider: DeepSeekWebviewProvider, prompt
 						onProgress(fullResponse);
 						stopRequest = false;
 						reader?.cancel();
-						return;
+						break;
 					}
 					onProgress(fullResponse);
 				}
+
 			}
 		}
 
@@ -106,16 +179,29 @@ export function activate(context: vscode.ExtensionContext) {
 
 	if (!apiKey) {
 		vscode.window.showInformationMessage(
-			'DeepSeek API 密钥未设置。点击这里设置。',
+			'API keys are not set. Click here to set.',
 			{ modal: true },
-			'打开设置'
+			'Open Settings'
 		).then((selection) => {
-			if (selection === '打开设置') {
+			if (selection === 'Open Settings') {
 				// 打开设置界面，让用户设置 API 密钥
-				vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek.apiKey');
+				vscode.commands.executeCommand('workbench.action.openSettings', 'Deepseek');
 			}
 		});
 	}
+
+	// if (!apiKeyDeepseek) {
+	// 	vscode.window.showInformationMessage(
+	// 		'DeepSeek API 密钥未设置。点击这里设置。',
+	// 		{ modal: true },
+	// 		'打开设置'
+	// 	).then((selection) => {
+	// 		if (selection === '打开设置') {
+	// 			// 打开设置界面，让用户设置 API 密钥
+	// 			vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek.apiKey');
+	// 		}
+	// 	});
+	// }
 
 	console.log('DeepSeek 插件注册Webview视图');
 	const viewProvider = new DeepSeekWebviewProvider(context);
@@ -156,7 +242,7 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('DeepSeek 插件注册打开 API 密钥设置的命令');
 	let openApiKeySettings = vscode.commands.registerCommand('extension.openDeepseekApiKeySettings', () => {
 		// 打开 VS Code 设置页面
-		vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek.apiKey');
+		vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek');
 	});
 
 	// 添加视图到活动栏
@@ -182,7 +268,8 @@ export function activate(context: vscode.ExtensionContext) {
 		if (event.affectsConfiguration('deepseek.apiKey')) {
 			const apiKey = vscode.workspace.getConfiguration('deepseek').get<string>('apiKey');
 			if (apiKey) {
-				vscode.window.showInformationMessage('DeepSeek API Key Update！');
+				const apiKeyType = vscode.workspace.getConfiguration('deepseek').get<string>('provider');
+				vscode.window.showInformationMessage(apiKeyType + ' API Key Update！');
 			}
 		}
 	});
@@ -278,7 +365,6 @@ class DeepSeekWebviewProvider implements vscode.WebviewViewProvider {
 			this.addToHistory(prompt, currentResponse);
 			this.updateWebView(true);
 		});
-
 	}
 
 	updateWebView(showLoading: boolean = false) {
