@@ -1,5 +1,11 @@
 # 变更记录
 
+## [1.2.1] - 2025-03-25
+
+### 新增
+
+* 增加Ollama和斑码算力云的api调用方式，目前斑码算力云可以免费使用deepseek满血版一个月,重磅推荐
+
 ## [1.2.0] - 2025-02-18
 
 ### 新增
@@ -52,6 +58,12 @@
 * 支持JavaScript/Python/C++/C#/Java/Go/Rust/PHP/Ruby/Swift/Objective-C/TypeScript/SQL/HTML/CSS/JSON/YAML/Markdown/LaTeX/Bash/Shell等代码生成。
 
 # Changelog
+
+## [1.2.1] - 2025-03-25
+
+### Add
+
+* Add Ollama api provider
 
 ## [1.2.0] - 2025-02-18
 

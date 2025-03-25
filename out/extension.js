@@ -20,24 +20,41 @@ let stopRequest = false;
 const apiDeepseekV3URL = 'https://api.deepseek.com/beta/completions';
 const apiDeepseekV3SiliconflowURL = 'https://api.siliconflow.cn/v1/chat/completions';
 const apiDeepseekV3VolcengineURL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+const apiDeepseekBanmaURL = 'https://cloud.wenwen-ai.com/v1/chat/completions';
 function getDeepSeekRequestURL() {
-    const apiKeyType = vscode.workspace.getConfiguration('deepseek').get('provider');
-    if (apiKeyType === 'deepseek') {
+    const { provider, ollamaEndpoint } = getApiConfig();
+    if (provider === 'deepseek') {
         return apiDeepseekV3URL;
     }
-    else if (apiKeyType === 'siliconflow') {
+    else if (provider === 'siliconflow') {
         return apiDeepseekV3SiliconflowURL;
     }
-    else if (apiKeyType === 'volcengine') {
+    else if (provider === 'volcengine') {
         return apiDeepseekV3VolcengineURL;
+    }
+    else if (provider === 'ollama') {
+        return ollamaEndpoint + '/api/generate';
+    }
+    else if (provider === 'banma') {
+        return apiDeepseekBanmaURL;
     }
     else {
         return apiDeepseekV3URL;
     }
 }
 ;
+// 获取当前 API 配置
+function getApiConfig() {
+    const config = vscode.workspace.getConfiguration('deepseek');
+    const provider = config.get('provider') || 'volcengine';
+    const apiKey = config.get('apiKey') || '';
+    const ollamaEndpoint = config.get('ollamaEndpoint') || 'http://localhost:11434';
+    const ollamaModel = config.get('ollamaModel') || 'codellama';
+    const banmaModel = config.get('banmaModel') || 'deepseek-r1-32b';
+    return { provider, apiKey, ollamaEndpoint, ollamaModel, banmaModel };
+}
 function getModelRequestConfig(prompt = '') {
-    const provider = vscode.workspace.getConfiguration('deepseek').get('provider');
+    const { provider, banmaModel } = getApiConfig();
     if (provider === 'deepseek') {
         return {
             model: 'deepseek-chat',
@@ -50,11 +67,11 @@ function getModelRequestConfig(prompt = '') {
     else if (provider === 'siliconflow') {
         return { model: "deepseek-ai/DeepSeek-V3", messages: [{ role: "user", content: prompt }], stream: true, max_tokens: 1280, stop: ["null"], temperature: 0.7, top_p: 0.7, top_k: 50, frequency_penalty: 0.5, n: 1, response_format: { "type": "text" }, tools: [{ type: "function", function: { description: "<string>", name: "<string>", parameters: {}, strict: false } }] };
     }
-    else if (provider === 'volcengine') {
+    else if (provider === 'volcengine' || 'banma') {
         return {
-            model: 'ep-20250218142437-9k5tv',
+            model: provider === 'volcengine' ? 'ep-20250218142437-9k5tv' : banmaModel,
             messages: [{ role: "user", content: prompt }],
-            max_tokens: 512,
+            max_tokens: 1024,
             temperature: 0,
             stream: true
         };
@@ -79,7 +96,7 @@ function getModelResponseContent(jsonData) {
     else if (provider === 'siliconflow') {
         return jsonData.choices[0].message.content || '';
     }
-    else if (provider === 'volcengine') {
+    else if (provider === 'volcengine' || provider === 'banma') {
         return ((_c = (_b = jsonData.choices[0]) === null || _b === void 0 ? void 0 : _b.delta) === null || _c === void 0 ? void 0 : _c.content) || '';
     }
     else {
@@ -115,56 +132,53 @@ function getDeepSeekResponseNoStream(prompt) {
 // 获取 DeepSeek 回复
 function getDeepSeekResponse(viewProvider, prompt, onProgress) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a;
-        const apiKey = vscode.workspace.getConfiguration('deepseek').get('apiKey');
+        var _a, _b, _c;
+        const { provider, apiKey, ollamaEndpoint, ollamaModel } = getApiConfig();
+        if (provider !== 'ollama' && !apiKey) {
+            vscode.window.showErrorMessage(`请设置 ${provider} 的 API Key`);
+            return;
+        }
         console.log('DeepSeek 请求开始');
         viewProvider.showLoading(true);
         curUUID = crypto.randomUUID();
         let fullResponse = '';
         try {
-            const response = yield fetch(getDeepSeekRequestURL(), {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(getModelRequestConfig(prompt))
-            });
-            const reader = (_a = response.body) === null || _a === void 0 ? void 0 : _a.getReader();
-            const decoder = new TextDecoder();
-            while (true) {
-                const { done, value } = yield reader.read();
-                if (done)
-                    break;
-                const chunk = decoder.decode(value);
-                const lines = chunk.split('\n').filter(line => line.trim() !== '');
-                for (const line of lines) {
-                    if (line.includes('error') || line.includes('50501')) {
+            if (provider === 'ollama') {
+                const response = yield fetch(`${ollamaEndpoint}/api/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: ollamaModel,
+                        prompt: prompt,
+                        stream: true,
+                    })
+                });
+                const reader = (_a = response.body) === null || _a === void 0 ? void 0 : _a.getReader();
+                const decoder = new TextDecoder();
+                while (true) {
+                    const { done, value } = yield reader.read();
+                    if (done)
+                        break;
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n').filter(line => line.trim() !== '');
+                    for (const line of lines) {
+                        if (line.includes('error')) {
+                            const jsonData = JSON.parse(line);
+                            const errorMessage = ((_b = jsonData.error) === null || _b === void 0 ? void 0 : _b.message) || '未知错误';
+                            fullResponse += '\n\nRequest error:' + errorMessage;
+                            console.error('Request error:', errorMessage);
+                            onProgress(fullResponse);
+                            vscode.window.showErrorMessage('DeepSeek Code Generator:' + errorMessage);
+                            stopRequest = false;
+                            break;
+                        }
+                        if (line.includes('[DONE]'))
+                            break;
+                        // if (line.startsWith('data: ')) {
                         const jsonData = JSON.parse(line);
-                        if (jsonData.error) {
-                            fullResponse += '\n\nRequest error:' + jsonData.error.message;
-                            console.error('Request error:', jsonData.error.message);
-                            vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.error.message);
-                        }
-                        else if (jsonData.message) {
-                            fullResponse += '\n\nRequest error:' + jsonData.message;
-                            console.error('Request error:', jsonData.message);
-                            vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.message);
-                        }
-                        else {
-                            fullResponse += '\n\nRequest error:' + JSON.stringify(jsonData);
-                            console.error('Request error:', jsonData);
-                            vscode.window.showErrorMessage('DeepSeek Code Generator:' + JSON.stringify(jsonData));
-                        }
-                        onProgress(fullResponse);
-                        break;
-                    }
-                    if (line.includes('[DONE]')) {
-                        break;
-                    }
-                    if (line.startsWith('data: ')) {
-                        const jsonData = JSON.parse(line.slice(6));
-                        const text = getModelResponseContent(jsonData);
+                        const text = jsonData.response || '';
                         fullResponse += text;
                         if (stopRequest) {
                             fullResponse += '\n\nUser stop request';
@@ -174,11 +188,72 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
                             break;
                         }
                         onProgress(fullResponse);
+                        // }
                     }
                 }
+                viewProvider.showLoading(false);
+                stopRequest = false;
             }
-            viewProvider.showLoading(false);
-            stopRequest = false;
+            else {
+                const response = yield fetch(getDeepSeekRequestURL(), {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(getModelRequestConfig(prompt))
+                });
+                const reader = (_c = response.body) === null || _c === void 0 ? void 0 : _c.getReader();
+                const decoder = new TextDecoder();
+                while (true) {
+                    const { done, value } = yield reader.read();
+                    if (done)
+                        break;
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n').filter(line => line.trim() !== '');
+                    for (const line of lines) {
+                        // const jsonData = JSON.parse(line);
+                        if (line.includes('error') || line.includes('50501')) {
+                            const jsonData = JSON.parse(line);
+                            if (jsonData.error) {
+                                fullResponse += '\n\nRequest error:' + jsonData.error.message;
+                                console.error('Request error:', jsonData.error.message);
+                                vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.error.message);
+                            }
+                            else if (jsonData.message) {
+                                fullResponse += '\n\nRequest error:' + jsonData.message;
+                                console.error('Request error:', jsonData.message);
+                                vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.message);
+                            }
+                            else {
+                                fullResponse += '\n\nRequest error:' + JSON.stringify(jsonData);
+                                console.error('Request error:', jsonData);
+                                vscode.window.showErrorMessage('DeepSeek Code Generator:' + JSON.stringify(jsonData));
+                            }
+                            onProgress(fullResponse);
+                            break;
+                        }
+                        if (line.includes('[DONE]')) {
+                            break;
+                        }
+                        if (line.startsWith('data: ')) {
+                            const jsonData = JSON.parse(line.slice(6));
+                            const text = getModelResponseContent(jsonData);
+                            fullResponse += text;
+                            if (stopRequest) {
+                                fullResponse += '\n\nUser stop request';
+                                onProgress(fullResponse);
+                                stopRequest = false;
+                                reader === null || reader === void 0 ? void 0 : reader.cancel();
+                                break;
+                            }
+                            onProgress(fullResponse);
+                        }
+                    }
+                }
+                viewProvider.showLoading(false);
+                stopRequest = false;
+            }
         }
         catch (error) {
             console.error('DeepSeek 请求失败:', error);
@@ -190,10 +265,10 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
 }
 // 激活插件
 function activate(context) {
-    // 注册 Webview View
+    // 注册 Webview View	
     // 获取设置中的 API 密钥
-    const apiKey = vscode.workspace.getConfiguration('deepseek').get('apiKey');
-    if (!apiKey) {
+    const { provider, apiKey } = getApiConfig();
+    if (provider !== 'ollama' && !apiKey) {
         vscode.window.showInformationMessage('API keys are not set. Click here to set.', { modal: true }, 'Open Settings').then((selection) => {
             if (selection === 'Open Settings') {
                 // 打开设置界面，让用户设置 API 密钥

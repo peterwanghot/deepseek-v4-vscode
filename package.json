@@ -2,7 +2,7 @@
   "name": "deepseek-code-generator",
   "displayName": "DeepSeek Code Generator",
   "description": "Generate code using DeepSeek AI",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "author": "David Dai",
   "publisher": "DavidDai",
   "icon": "media/deepseek-color-128.png",
@@ -22,15 +22,32 @@
           "enum": [
             "deepseek",
             "volcengine",
-            "siliconflow"
+            "siliconflow",
+            "ollama",
+            "banma"
           ],
-          "default": "volcengine",
+          "default": "banma",
           "description": "Select API provider"
+        },
+        "deepseek.banmaModel": {
+          "type": "string",
+          "default": "deepseek-reasoner",
+          "description": "Banma deepseek model"
         },
         "deepseek.apiKey": {
           "type": "string",
           "default": "",
           "description": "Input API key"
+        },
+        "deepseek.ollamaEndpoint": {
+          "type": "string",
+          "default": "http://203.83.237.172:11434",
+          "description": "Ollama API endpoint (e.g. http://localhost:11434)"
+        },
+        "deepseek.ollamaModel": {
+          "type": "string",
+          "default": "deepseek-r1:32b",
+          "description": "Ollama model name"
         }
       }
     },

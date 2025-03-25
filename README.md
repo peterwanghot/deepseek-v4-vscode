@@ -34,9 +34,11 @@
 
 ## 配置
 
-第一次使用会让填写apiKey，建议使用火山引擎，目前最稳定的api调用厂商。
+### 非Ollama
 
-![image](https://i.111666.best/image/ZCxH9Ls2PBfGosxxH8193V.png)
+第一次使用会让填写apiKey。强力推荐选择斑码云算力平台! 满血 671b Deepseek！
+
+![image](https://i.111666.best/image/GXpX6Jbw4dgKSE5w5jLhC9.png)
 
 ```json
 {
@@ -44,9 +46,40 @@
 }
 ```
 
+### 非Ollama Banma
+
+```json
+{
+  "deepseek.banmaModel": "deepseek-reasoner"
+}
+```
+
+### Ollama
+
+```json
+{
+    "deepseek.ollamaEndpoint": "http://localhost:11434"
+},
+{
+    "deepseek.ollamaModel": "deepseek-r1:32b"
+}
+```
+
 ## API key 申请
 
-### 由于目前ds官方已经不能申请api调用,因此设置火山引擎API为默认调用方式
+### 重磅推荐! 斑码云算力平台! 满血 671b Deepseek
+
+限时一个月免费使用满血版deepseek
+
+### banma
+
+注册:
+
+[https://cloud.wenwen-ai.com/register?aff=Z4Yt](https://cloud.wenwen-ai.com/register?aff=Z4Yt)
+
+申请api地址:
+
+https://cloud.wenwen-ai.com/token
 
 ### deepseek
 
@@ -60,7 +93,7 @@
 
 **申请API key:**
 
-**[https://cloud.siliconflow.cn/account/ak](https://cloud.siliconflow.cn/account/ak)**
+**[https://cloud.siliconflow.cn/account/ak]()**
 
 ### volceengine 火山引擎 目前最稳定的API
 
@@ -72,7 +105,7 @@ https://console.volcengine.com/ark/region:ark+cn-beijing/experience/chat
 
 **申请API key**
 
-[https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)
+[https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D]()
 
 点击 API调用, 在新页面 找到 '选择 API Key 并复制' 并点击
 
@@ -127,10 +160,24 @@ If the plugin has keyboard shortcuts, list them here. For example:
 - `Ctrl/Cmd+Shift+t`: Open the Command Palette and ask DeepSeek questions.
 
 ## Configuration
+
 ![image](https://i.111666.best/image/ZCxH9Ls2PBfGosxxH8193V.png)
+### Not Ollama
+
 ```json
 {
   "deepseek.apiKey": "your-api-key-here"
+}
+```
+
+### Ollama
+
+```json
+{
+    "deepseek.ollamaEndpoint": "http://localhost:11434"
+},
+{
+    "deepseek.ollamaModel": "deepseek-r1:32b"
 }
 ```
 
@@ -142,13 +189,13 @@ Visit [https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api
 
 #### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
 
-#### Telegram
+<!-- #### Telegram
 
-![image](https://i.111666.best/image/YNFNyIqBP6OXSjAriY3Mk1.png)
+![image](https://i.111666.best/image/YNFNyIqBP6OXSjAriY3Mk1.png) -->
 
-#### Tg Group
+<!-- #### Tg Group
 
-![image](https://i.111666.best/image/y1HINyrJjcUyJodDJ1tFxY.png)
+![image](https://i.111666.best/image/y1HINyrJjcUyJodDJ1tFxY.png) -->
 
 #### Buy me a coffee
 
