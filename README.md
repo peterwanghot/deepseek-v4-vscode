@@ -67,7 +67,19 @@
 
 ## API key 申请
 
-### 重磅推荐! 斑码云算力平台! 满血 671b Deepseek
+### 重磅推荐! 斑码云代码平台! claude code免费体验
+
+#### 注册就送 $20 体验额度
+
+注册:
+
+[https://code.wenwen-ai.com/register?aff=2u50]()
+
+使用教程:
+
+<https://code.wenwen-ai.com/>
+
+### 斑码云算力平台! 满血 671b Deepseek
 
 限时一个月免费使用满血版deepseek
 
@@ -79,7 +91,7 @@
 
 申请api地址:
 
-https://cloud.wenwen-ai.com/token
+<https://cloud.wenwen-ai.com/token>
 
 ### deepseek
 
@@ -99,7 +111,7 @@ https://cloud.wenwen-ai.com/token
 
 **注册:**
 
-https://console.volcengine.com/ark/region:ark+cn-beijing/experience/chat
+[https://console.volcengine.com/ark/region:ark+cn-beijing/experience/chat](https://console.volcengine.com/ark/region:ark+cn-beijing/experience/chat)
 
 点击api接入 再点击确认接入
 
@@ -162,6 +174,7 @@ If the plugin has keyboard shortcuts, list them here. For example:
 ## Configuration
 
 ![image](https://i.111666.best/image/ZCxH9Ls2PBfGosxxH8193V.png)
+
 ### Not Ollama
 
 ```json

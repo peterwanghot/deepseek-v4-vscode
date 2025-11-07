@@ -13,10 +13,15 @@ exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = require("vscode");
 const path = require("path");
-const os = require("os"); // 引入 os 模块
-// import { v4 as uuidv4 } from './uuid';
+const os = require("os");
 let curUUID = '';
 let stopRequest = false;
+const createUUID = () => {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
 const apiDeepseekV3URL = 'https://api.deepseek.com/beta/completions';
 const apiDeepseekV3SiliconflowURL = 'https://api.siliconflow.cn/v1/chat/completions';
 const apiDeepseekV3VolcengineURL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
@@ -54,7 +59,7 @@ function getApiConfig() {
     return { provider, apiKey, ollamaEndpoint, ollamaModel, banmaModel };
 }
 function getModelRequestConfig(prompt = '') {
-    const { provider, banmaModel } = getApiConfig();
+    const { provider, banmaModel, ollamaModel } = getApiConfig();
     if (provider === 'deepseek') {
         return {
             model: 'deepseek-chat',
@@ -65,14 +70,30 @@ function getModelRequestConfig(prompt = '') {
         };
     }
     else if (provider === 'siliconflow') {
-        return { model: "deepseek-ai/DeepSeek-V3", messages: [{ role: "user", content: prompt }], stream: true, max_tokens: 1280, stop: ["null"], temperature: 0.7, top_p: 0.7, top_k: 50, frequency_penalty: 0.5, n: 1, response_format: { "type": "text" }, tools: [{ type: "function", function: { description: "<string>", name: "<string>", parameters: {}, strict: false } }] };
+        return { model: "deepseek-ai/DeepSeek-V3", messages: [{ role: "user", content: prompt }], stream: true, max_tokens: 1280, stop: ["null"], temperature: 0.7, top_p: 0.7, top_k: 50, frequency_penalty: 0.5, n: 1, response_format: { "type": "text" } };
     }
-    else if (provider === 'volcengine' || 'banma') {
+    else if (provider === 'volcengine') {
         return {
-            model: provider === 'volcengine' ? 'ep-20250218142437-9k5tv' : banmaModel,
+            model: 'ep-20250218142437-9k5tv',
             messages: [{ role: "user", content: prompt }],
             max_tokens: 1024,
             temperature: 0,
+            stream: true
+        };
+    }
+    else if (provider === 'banma') {
+        return {
+            model: banmaModel,
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 1024,
+            temperature: 0,
+            stream: true
+        };
+    }
+    else if (provider === 'ollama') {
+        return {
+            model: ollamaModel,
+            prompt: prompt,
             stream: true
         };
     }
@@ -88,47 +109,43 @@ function getModelRequestConfig(prompt = '') {
 }
 ;
 function getModelResponseContent(jsonData) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
     const provider = vscode.workspace.getConfiguration('deepseek').get('provider');
     if (provider === 'deepseek') {
-        return ((_a = jsonData.choices[0]) === null || _a === void 0 ? void 0 : _a.text) || '';
+        return ((_b = (_a = jsonData.choices) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.text) || '';
     }
     else if (provider === 'siliconflow') {
-        return jsonData.choices[0].message.content || '';
+        return ((_e = (_d = (_c = jsonData.choices) === null || _c === void 0 ? void 0 : _c[0]) === null || _d === void 0 ? void 0 : _d.message) === null || _e === void 0 ? void 0 : _e.content) || '';
     }
     else if (provider === 'volcengine' || provider === 'banma') {
-        return ((_c = (_b = jsonData.choices[0]) === null || _b === void 0 ? void 0 : _b.delta) === null || _c === void 0 ? void 0 : _c.content) || '';
+        return ((_h = (_g = (_f = jsonData.choices) === null || _f === void 0 ? void 0 : _f[0]) === null || _g === void 0 ? void 0 : _g.delta) === null || _h === void 0 ? void 0 : _h.content) || '';
     }
     else {
-        return jsonData.choices[0].text;
+        return ((_k = (_j = jsonData.choices) === null || _j === void 0 ? void 0 : _j[0]) === null || _k === void 0 ? void 0 : _k.text) || '';
     }
 }
 // 获取 deepseek 回复 非流式
-function getDeepSeekResponseNoStream(prompt) {
-    return __awaiter(this, void 0, void 0, function* () {
-        var _a;
-        const apiKey = vscode.workspace.getConfiguration('deepseek').get('apiKey');
-        console.log('DeepSeek 请求开始');
-        curUUID = crypto.randomUUID();
-        try {
-            const response = yield fetch(getDeepSeekRequestURL(), {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(getModelRequestConfig(prompt))
-            });
-            const data = yield response.json();
-            const fullResponse = ((_a = data.choices[0]) === null || _a === void 0 ? void 0 : _a.text) || '';
-            return fullResponse;
-        }
-        catch (error) {
-            console.error('DeepSeek 请求失败:', error);
-        }
-        return '';
-    });
-}
+// async function getDeepSeekResponseNoStream(prompt: string) {
+// 	const apiKey = vscode.workspace.getConfiguration('deepseek').get<string>('apiKey');
+// 	console.log('DeepSeek 请求开始');
+// 	curUUID = crypto.randomUUID();
+// 	try {
+// 		const response = await fetch(getDeepSeekRequestURL(), {
+// 			method: 'POST',
+// 			headers: {
+// 				'Authorization': `Bearer ${apiKey}`,
+// 				'Content-Type': 'application/json'
+// 			},
+// 			body: JSON.stringify(getModelRequestConfig(prompt))
+// 		});
+// 		const data = await response.json();
+// 		const fullResponse = (data as any).choices[0]?.text || '';
+// 		return fullResponse;
+// 	} catch (error) {
+// 		console.error('DeepSeek 请求失败:', error);
+// 	}
+// 	return '';
+// }
 // 获取 DeepSeek 回复
 function getDeepSeekResponse(viewProvider, prompt, onProgress) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -140,7 +157,7 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
         }
         console.log('DeepSeek 请求开始');
         viewProvider.showLoading(true);
-        curUUID = crypto.randomUUID();
+        curUUID = createUUID();
         let fullResponse = '';
         try {
             if (provider === 'ollama') {
@@ -165,21 +182,31 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
                     const lines = chunk.split('\n').filter(line => line.trim() !== '');
                     for (const line of lines) {
                         if (line.includes('error')) {
-                            const jsonData = JSON.parse(line);
-                            const errorMessage = ((_b = jsonData.error) === null || _b === void 0 ? void 0 : _b.message) || '未知错误';
-                            fullResponse += '\n\nRequest error:' + errorMessage;
-                            console.error('Request error:', errorMessage);
-                            onProgress(fullResponse);
-                            vscode.window.showErrorMessage('DeepSeek Code Generator:' + errorMessage);
-                            stopRequest = false;
+                            try {
+                                const jsonData = JSON.parse(line);
+                                const errorMessage = ((_b = jsonData.error) === null || _b === void 0 ? void 0 : _b.message) || '未知错误';
+                                fullResponse += '\n\nRequest error:' + errorMessage;
+                                console.error('Request error:', errorMessage);
+                                onProgress(fullResponse);
+                                vscode.window.showErrorMessage('DeepSeek Code Generator:' + errorMessage);
+                                stopRequest = false;
+                            }
+                            catch (parseError) {
+                                console.error('解析错误响应时失败:', parseError);
+                                fullResponse += '\n\nRequest error: 解析响应失败';
+                            }
                             break;
                         }
                         if (line.includes('[DONE]'))
                             break;
-                        // if (line.startsWith('data: ')) {
-                        const jsonData = JSON.parse(line);
-                        const text = jsonData.response || '';
-                        fullResponse += text;
+                        try {
+                            const jsonData = JSON.parse(line);
+                            const text = jsonData.response || '';
+                            fullResponse += text;
+                        }
+                        catch (parseError) {
+                            console.error('解析响应时失败:', parseError);
+                        }
                         if (stopRequest) {
                             fullResponse += '\n\nUser stop request';
                             onProgress(fullResponse);
@@ -214,21 +241,27 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
                     for (const line of lines) {
                         // const jsonData = JSON.parse(line);
                         if (line.includes('error') || line.includes('50501')) {
-                            const jsonData = JSON.parse(line);
-                            if (jsonData.error) {
-                                fullResponse += '\n\nRequest error:' + jsonData.error.message;
-                                console.error('Request error:', jsonData.error.message);
-                                vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.error.message);
+                            try {
+                                const jsonData = JSON.parse(line);
+                                if (jsonData.error) {
+                                    fullResponse += '\n\nRequest error:' + jsonData.error.message;
+                                    console.error('Request error:', jsonData.error.message);
+                                    vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.error.message);
+                                }
+                                else if (jsonData.message) {
+                                    fullResponse += '\n\nRequest error:' + jsonData.message;
+                                    console.error('Request error:', jsonData.message);
+                                    vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.message);
+                                }
+                                else {
+                                    fullResponse += '\n\nRequest error:' + JSON.stringify(jsonData);
+                                    console.error('Request error:', jsonData);
+                                    vscode.window.showErrorMessage('DeepSeek Code Generator:' + JSON.stringify(jsonData));
+                                }
                             }
-                            else if (jsonData.message) {
-                                fullResponse += '\n\nRequest error:' + jsonData.message;
-                                console.error('Request error:', jsonData.message);
-                                vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.message);
-                            }
-                            else {
-                                fullResponse += '\n\nRequest error:' + JSON.stringify(jsonData);
-                                console.error('Request error:', jsonData);
-                                vscode.window.showErrorMessage('DeepSeek Code Generator:' + JSON.stringify(jsonData));
+                            catch (parseError) {
+                                console.error('解析错误响应时失败:', parseError);
+                                fullResponse += '\n\nRequest error: 解析响应失败';
                             }
                             onProgress(fullResponse);
                             break;
@@ -237,17 +270,22 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
                             break;
                         }
                         if (line.startsWith('data: ')) {
-                            const jsonData = JSON.parse(line.slice(6));
-                            const text = getModelResponseContent(jsonData);
-                            fullResponse += text;
-                            if (stopRequest) {
-                                fullResponse += '\n\nUser stop request';
+                            try {
+                                const jsonData = JSON.parse(line.slice(6));
+                                const text = getModelResponseContent(jsonData);
+                                fullResponse += text;
+                                if (stopRequest) {
+                                    fullResponse += '\n\nUser stop request';
+                                    onProgress(fullResponse);
+                                    stopRequest = false;
+                                    reader === null || reader === void 0 ? void 0 : reader.cancel();
+                                    break;
+                                }
                                 onProgress(fullResponse);
-                                stopRequest = false;
-                                reader === null || reader === void 0 ? void 0 : reader.cancel();
-                                break;
                             }
-                            onProgress(fullResponse);
+                            catch (parseError) {
+                                console.error('解析响应时失败:', parseError);
+                            }
                         }
                     }
                 }
@@ -276,18 +314,6 @@ function activate(context) {
             }
         });
     }
-    // if (!apiKeyDeepseek) {
-    // 	vscode.window.showInformationMessage(
-    // 		'DeepSeek API 密钥未设置。点击这里设置。',
-    // 		{ modal: true },
-    // 		'打开设置'
-    // 	).then((selection) => {
-    // 		if (selection === '打开设置') {
-    // 			// 打开设置界面，让用户设置 API 密钥
-    // 			vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek.apiKey');
-    // 		}
-    // 	});
-    // }
     console.log('DeepSeek 插件注册Webview视图');
     const viewProvider = new DeepSeekWebviewProvider(context);
     vscode.window.registerWebviewViewProvider('deepseekView', viewProvider);
@@ -319,10 +345,10 @@ function activate(context) {
         vscode.commands.executeCommand('workbench.view.extension.deepseekContainer');
     });
     console.log('DeepSeek 插件注册打开 API 密钥设置的命令');
-    let openApiKeySettings = vscode.commands.registerCommand('extension.openDeepseekApiKeySettings', () => {
-        // 打开 VS Code 设置页面
-        vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek');
-    });
+    // let openApiKeySettings = vscode.commands.registerCommand('extension.openDeepseekApiKeySettings', () => {
+    // 	// 打开 VS Code 设置页面
+    // 	vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek');
+    // });
     // 添加视图到活动栏
     const view = vscode.window.createTreeView('deepseekExplorer', {
         treeDataProvider: {
@@ -338,7 +364,7 @@ function activate(context) {
             }
         }
     });
-    context.subscriptions.push(disposable, toggleToDeepSeekViewDisposable, openApiKeySettings, view);
+    context.subscriptions.push(disposable, toggleToDeepSeekViewDisposable, view);
     // 监听 API 密钥设置变化
     vscode.workspace.onDidChangeConfiguration((event) => {
         if (event.affectsConfiguration('deepseek.apiKey')) {
@@ -352,6 +378,7 @@ function activate(context) {
     console.log('DeepSeek 插件已激活');
 }
 // Webview 提供者类
+const MAX_HISTORY_ROUNDS = 10;
 class DeepSeekWebviewProvider {
     constructor(context) {
         this._panelContent = '';
@@ -359,7 +386,13 @@ class DeepSeekWebviewProvider {
         this._mediaDir = '';
         this._system = '';
         this._isDarkTheme = false;
+        this._currentSessionId = createUUID();
         this._context = context;
+        // 加载保存的历史记录
+        this.loadHistory();
+        if (this._chatHistory.length > 0) {
+            this._currentSessionId = this._chatHistory[this._chatHistory.length - 1].sessionId;
+        }
     }
     resolveWebviewView(webviewView) {
         this._view = webviewView;
@@ -374,19 +407,7 @@ class DeepSeekWebviewProvider {
         const extensionPath = this._context.extensionPath;
         const dirMedia = this._view.webview.asWebviewUri(vscode.Uri.file(path.join(extensionPath, 'media', '')));
         this._mediaDir = dirMedia.toString();
-        // 检查系统类型
-        const systemPlatform = os.platform(); // 获取当前操作系统
-        // 显示系统类型信息（可选）
-        // vscode.window.showInformationMessage(`当前操作系统: ${systemPlatform}`);
-        // 根据系统平台执行不同操作
-        // if (systemPlatform === 'win32') {
-        // 	console.log('在 Windows 系统上');
-        // } else if (systemPlatform === 'darwin') {
-        // 	console.log('在 macOS 系统上');
-        // } else if (systemPlatform === 'linux') {
-        // 	console.log('在 Linux 系统上');
-        // }
-        // 获取当前激活的主题
+        const systemPlatform = os.platform();
         const activeTheme = vscode.window.activeColorTheme;
         if (activeTheme.kind === vscode.ColorThemeKind.Dark) {
             this._isDarkTheme = true;
@@ -395,9 +416,7 @@ class DeepSeekWebviewProvider {
             this._isDarkTheme = false;
         }
         this._system = systemPlatform;
-        // 设置 Webview 的 HTML 内容
         this.updateWebView();
-        // 监听来自 WebView 的消息
         this._view.webview.onDidReceiveMessage((message) => {
             switch (message.command) {
                 case 'askDeepSeek':
@@ -405,6 +424,24 @@ class DeepSeekWebviewProvider {
                     return;
                 case 'stopGeneration':
                     stopRequest = true;
+                    return;
+                case 'clearHistory':
+                    this.clearHistory();
+                    this.updateWebView();
+                    return;
+                case 'switchSession':
+                    this.switchSession(message.sessionId);
+                    this.updateWebView();
+                    return;
+                case 'startNewSession':
+                    this.startNewSession();
+                    this.updateWebView();
+                    return;
+                case 'refreshView':
+                    this.updateWebView();
+                    return;
+                case 'openSettings':
+                    vscode.commands.executeCommand('workbench.action.openSettings', 'Deepseek');
                     return;
             }
         }, undefined, this._context.subscriptions);
@@ -422,15 +459,92 @@ class DeepSeekWebviewProvider {
     }
     updateWebView(showLoading = false) {
         if (this._view) {
-            const chatHistoryHTML = this._chatHistory.map((entry) => {
-                return `
-			  <div><strong>You:</strong> <pre>${entry.user}</pre></div>
-			  <div><strong>DeepSeek:</strong> <pre><code>${this.formatCode(entry.DeepSeek)}</code></pre></div>
-			`;
-            }).join('');
             // const mediaPath = vscode.Uri.joinPath(this._context.extensionUri, 'media');
             const sysType = this._system;
             const isDark = this._isDarkTheme;
+            const codiconUri = this._view.webview.asWebviewUri(vscode.Uri.joinPath(this._context.extensionUri, 'media', 'codicon.css'));
+            const styleUri = this._view.webview.asWebviewUri(vscode.Uri.joinPath(this._context.extensionUri, 'media', 'style.css'));
+            const escapeHtml = (value) => {
+                if (!value) {
+                    return '';
+                }
+                return value
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            };
+            if (!this._currentSessionId && this._chatHistory.length > 0) {
+                this._currentSessionId = this._chatHistory[this._chatHistory.length - 1].sessionId;
+            }
+            // 获取每个会话的最后一次对话
+            const recentSessions = this._chatHistory
+                .map(session => {
+                const lastEntry = session.chatList[session.chatList.length - 1];
+                if (!lastEntry)
+                    return null;
+                return {
+                    sessionId: session.sessionId,
+                    uuid: lastEntry.entry.uuid,
+                    user: lastEntry.entry.user,
+                    DeepSeek: lastEntry.entry.DeepSeek,
+                    timestamp: session.timestamp
+                };
+            })
+                .filter(Boolean)
+                .sort((a, b) => {
+                // 按会话时间戳排序
+                const aTime = a.timestamp || 0;
+                const bTime = b.timestamp || 0;
+                return bTime - aTime;
+            })
+                .slice(0, MAX_HISTORY_ROUNDS);
+            // 格式化时间戳为 HH:mm
+            const formatTime = (timestamp) => {
+                const date = new Date(timestamp);
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
+            };
+            const recentHistoryHTML = recentSessions.length
+                ? recentSessions.map((entry, index) => {
+                    if (!entry)
+                        return '';
+                    return `
+						<div class="history-item" data-history-uuid="${entry.uuid}" data-session-id="${entry.sessionId}" tabindex="0" role="button">
+							<div class="history-item__time">${formatTime(entry.timestamp)}</div>
+							<div class="history-item__label">我：</div>
+							<div class="history-item__text">${escapeHtml(entry.user)}</div>
+							<div class="history-item__label">DeepSeek：</div>
+							<div class="history-item__text">${escapeHtml(entry.DeepSeek)}</div>
+						</div>
+					`;
+                }).join('')
+                : `<div class="history-empty">暂无历史记录</div>`;
+            // 获取当前会话的对话历史
+            const currentSession = this._chatHistory.find(session => session.sessionId === this._currentSessionId);
+            const currentChatList = currentSession ? currentSession.chatList : [];
+            const chatHistoryHTML = currentChatList.length
+                ? currentChatList.map((chatItem) => {
+                    const userTime = chatItem.entry.userTimestamp ? formatTime(chatItem.entry.userTimestamp) : '';
+                    const deepSeekTime = chatItem.entry.deepSeekTimestamp ? formatTime(chatItem.entry.deepSeekTimestamp) : '';
+                    return `
+				  <div class="chat-entry" data-history-uuid="${chatItem.entry.uuid}">
+					<div class="chat-entry__block">
+					  <div class="chat-entry__label">You</div>
+					  <pre>${escapeHtml(chatItem.entry.user)}</pre>
+					</div>
+					<div class="chat-entry__time">${userTime}</div>
+					<div class="chat-entry__block">
+					  <div class="chat-entry__label">DeepSeek</div>
+					  <pre style="padding:0"><code>${this.formatCode(chatItem.entry.DeepSeek)}</code></pre>
+					</div>
+					<div class="chat-entry__time">${deepSeekTime}</div>
+				  </div>
+				`;
+                }).join('')
+                : `<div class="chat-empty">暂无当前会话内容，开始新的对话吧。</div>`;
             this._panelContent = `
 			<html>
 			  <head>
@@ -442,14 +556,226 @@ class DeepSeekWebviewProvider {
 					display: flex;
 					flex-direction: column;
 					height: 100vh;
+					overflow: hidden;
+				  }
+				  .top-header {
+					display: flex;
+					justify-content: flex-end;
+					align-items: center;
+					width: 100%;
+					position: relative;
+					padding:12px 0;
+				  }
+				  #icons {
+					display: flex;
+					gap: 4px;
+				  }
+				  #icons .icon {
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					width: 24px;
+					height: 24px;
+					border-radius: 4px;
+					color: var(--vscode-button-secondaryForeground);
+					background: transparent;
+					text-decoration: none;
+					position: relative;
+					cursor: pointer;
+				  }
+				  #icons .icon::after {
+					content: attr(data-tooltip);
+					position: absolute;
+					top: -34px;
+					left: 50%;
+					transform: translateX(-50%);
+					background: var(--vscode-widget-background);
+					color: var(--vscode-foreground);
+					padding: 4px 8px;
+					border-radius: 4px;
+					font-size: 11px;
+					white-space: nowrap;
+					opacity: 0;
+					pointer-events: none;
+					transition: opacity 0.15s ease;
+					box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+				  }
+				  #icons .icon::before {
+					content: '';
+					position: absolute;
+					top: -10px;
+					left: 50%;
+					transform: translateX(-50%);
+					border: 6px solid transparent;
+					border-top-color: var(--vscode-widget-background);
+					opacity: 0;
+					transition: opacity 0.15s ease;
+				  }
+				  #icons .icon:hover::after,
+				  #icons .icon:hover::before {
+					opacity: 1;
+				  }
+				  #icons .icon .codicon {
+					font-size: 16px;
+				  }
+				  .history-panel {
+					position: absolute;
+					top: 48px;
+					right: 20px;
+					width: 280px;
+					max-height: 360px;
+					background: var(--vscode-editorWidget-background);
+					border: 1px solid var(--vscode-editorWidget-border);
+					border-radius: 8px;
+					box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+					display: none;
+					flex-direction: column;
+					z-index: 1000;
+				  }
+				  .history-panel.show {
+					display: flex;
+				  }
+				  .history-panel__header {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding: 10px 12px;
+					border-bottom: 1px solid var(--vscode-editorWidget-border);
+					font-weight: bold;
+				  }
+				  .history-close {
+					background: none;
+					border: none;
+					cursor: pointer;
+					color: var(--vscode-foreground);
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				  }
+				  .history-panel__body {
+					padding: 10px 12px;
+					overflow-y: auto;
+					max-height: 300px;
+				  }
+				  .history-panel__footer {
+					padding: 8px 12px;
+					border-top: 1px solid var(--vscode-editorWidget-border);
+					background: var(--vscode-editorWidget-background);
+				  }
+				  .clear-all-btn {
+					width: 100%;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					gap: 6px;
+					padding: 6px 12px;
+					background: transparent;
+					border: 1px solid var(--vscode-button-dangerBackground);
+					border-radius: 4px;
+					color: var(--vscode-button-dangerForeground);
+					cursor: pointer;
+					font-size: 12px;
+					transition: background-color 0.15s ease;
+				  }
+				  .clear-all-btn:hover {
+					background: var(--vscode-button-dangerBackground);
+					color: var(--vscode-button-dangerForeground);
+				  }
+				  .clear-all-btn:active {
+					opacity: 0.8;
+				  }
+				  .clear-all-btn .codicon {
+					font-size: 14px;
+				  }
+				  .history-item {
+					margin-bottom: 12px;
+					padding: 8px 12px 12px 12px;
+					border-bottom: 1px solid rgba(255,255,255,0.08);
+					cursor: pointer;
+					outline: none;
+				  }
+				  .history-item:last-child {
+					border-bottom: none;
+					margin-bottom: 0;
+					padding-bottom: 0;
+				  }
+				  .history-item:hover {
+					background: rgba(255,255,255,0.04);
+				  }
+				  .history-item:focus-visible {
+					outline: 1px solid var(--vscode-focusBorder);
+					border-radius: 4px;
+				  }
+				  .history-item__time {
+					font-size: 11px;
+					color: var(--vscode-descriptionForeground);
+					margin-bottom: 4px;
+					text-align: right;
+				  }
+				  .history-item__index {
+					font-size: 12px;
+					color: var(--vscode-descriptionForeground);
+					margin-bottom: 4px;
+				  }
+				  .history-item__label {
+					font-size: 11px;
+					color: var(--vscode-descriptionForeground);
+					margin-top: 6px;
+				  }
+				  .history-item__text {
+					font-size: 12px;
+					color: var(--vscode-foreground);
+					overflow: hidden;
+					display: -webkit-box;
+					-webkit-line-clamp: 2;
+					-webkit-box-orient: vertical;
+					word-break: break-word;
+				  }
+				  .history-empty {
+					font-size: 12px;
+					color: var(--vscode-descriptionForeground);
+					text-align: center;
+					padding: 20px 0;
 				  }
 				  #chatContainer {
-					flex-grow: 1;
 					overflow-y: auto;
-					padding: 20px;
+					padding: 0 16px;
 					flex-basis: 0;
 					flex: 1;
 				  }
+				  .chat-empty {
+					color: var(--vscode-descriptionForeground);
+					font-size: 13px;
+					padding: 40px 0;
+					text-align: center;
+				  }
+				  .chat-entry {
+					border: 1px solid rgba(255,255,255,0.08);
+					border-radius: 8px;
+					padding: 12px;
+					margin-bottom: 16px;
+					background: rgba(255,255,255,0.02);
+					transition: border-color 0.2s ease, box-shadow 0.2s ease;
+				  }
+				  .chat-entry.highlight {
+					border-color: var(--vscode-focusBorder);
+					box-shadow: 0 0 0 2px rgba(14,99,156,0.3);
+				  }
+				  .chat-entry__time {
+					font-size: 11px;
+					color: var(--vscode-descriptionForeground);
+					margin: 6px 0;
+					text-align: right;
+				  }
+				  .chat-entry__block + .chat-entry__block {
+					margin-top: 12px;
+				  }
+				  .chat-entry__label {
+					font-size: 12px;
+					font-weight: bold;
+					margin-bottom: 6px;
+				  }
+				  
 				  pre {
 					background-color: #2e2e2e;
 					color: #f1f1f1;
@@ -479,6 +805,7 @@ class DeepSeekWebviewProvider {
 					background: var(--vscode-textCodeBlock-background);
 					caret-color: ${isDark ? 'white' : 'black'}; /* 设置光标颜色为白色 */
 					color: ${isDark ? 'white' : 'black'};
+					margin-bottom: 10px;
 				  }
 				  textarea:focus {
 					outline: 1px solid var(--vscode-focusBorder);
@@ -597,13 +924,44 @@ class DeepSeekWebviewProvider {
 					color: var(--vscode-disabledForeground);
 				}
 				</style>
+				<link rel="stylesheet" href="${styleUri}">
+				<link rel="stylesheet" href="${codiconUri}">
 				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/${isDark ? 'dark' : 'default'}.min.css">
 				<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 			  </head>
 			  <body>
+			  <div class="top-header">
+					<div id="icons">
+							<a id="historyButton" class="icon" title="Chat History" aria-label="Chat History" data-tooltip="Chat History" role="button" tabindex="0">
+								<i class="codicon codicon-history"></i>
+							</a>
+							<a id="settingsButton" class="icon" title="Settings" aria-label="Settings" data-tooltip="Settings">
+								<i class="codicon codicon-gear"></i>
+							</a>
+							<a id="newChatButton" class="icon" title="New Chat" aria-label="New Chat" data-tooltip="New Chat" role="button" tabindex="0">
+								<i class="codicon codicon-chat-sparkle"></i>
+							</a>
+						</div>
+						<div id="recentHistoryPanel" class="history-panel" aria-live="polite">
+							<div class="history-panel__header">
+								<span>最近10条对话</span>
+								<button id="closeHistoryPanel" class="history-close" aria-label="Close history panel">
+									<i class="codicon codicon-close"></i>
+								</button>
+							</div>
+							<div class="history-panel__body">
+								${recentHistoryHTML}
+							</div>
+							<div class="history-panel__footer">
+								<button id="clearAllHistoryBtn" class="clear-all-btn" title="清除所有历史记录">
+									<i class="codicon codicon-trash"></i>
+									<span>清除所有历史</span>
+								</button>
+							</div>
+						</div>
+					  </div>
 				<div id="chatContainer">
-				  <div>
-				 <div class="icon-back">
+				  <div class="icon-back">
 <svg fill="currentColor" fill-rule="evenodd" style="flex:none;line-height:1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.748 4.482c-.254-.124-.364.113-.512.234-.051.039-.094.09-.137.136-.372.397-.806.657-1.373.626-.829-.046-1.537.214-2.163.848-.133-.782-.575-1.248-1.247-1.548-.352-.156-.708-.311-.955-.65-.172-.241-.219-.51-.305-.774-.055-.16-.11-.323-.293-.35-.2-.031-.278.136-.356.276-.313.572-.434 1.202-.422 1.84.027 1.436.633 2.58 1.838 3.393.137.093.172.187.129.323-.082.28-.18.552-.266.833-.055.179-.137.217-.329.14a5.526 5.526 0 01-1.736-1.18c-.857-.828-1.631-1.742-2.597-2.458a11.365 11.365 0 00-.689-.471c-.985-.957.13-1.743.388-1.836.27-.098.093-.432-.779-.428-.872.004-1.67.295-2.687.684a3.055 3.055 0 01-.465.137 9.597 9.597 0 00-2.883-.102c-1.885.21-3.39 1.102-4.497 2.623C.082 8.606-.231 10.684.152 12.85c.403 2.284 1.569 4.175 3.36 5.653 1.858 1.533 3.997 2.284 6.438 2.14 1.482-.085 3.133-.284 4.994-1.86.47.234.962.327 1.78.397.63.059 1.236-.03 1.705-.128.735-.156.684-.837.419-.961-2.155-1.004-1.682-.595-2.113-.926 1.096-1.296 2.746-2.642 3.392-7.003.05-.347.007-.565 0-.845-.004-.17.035-.237.23-.256a4.173 4.173 0 001.545-.475c1.396-.763 1.96-2.015 2.093-3.517.02-.23-.004-.467-.247-.588zM11.581 18c-2.089-1.642-3.102-2.183-3.52-2.16-.392.024-.321.471-.235.763.09.288.207.486.371.739.114.167.192.416-.113.603-.673.416-1.842-.14-1.897-.167-1.361-.802-2.5-1.86-3.301-3.307-.774-1.393-1.224-2.887-1.298-4.482-.02-.386.093-.522.477-.592a4.696 4.696 0 011.529-.039c2.132.312 3.946 1.265 5.468 2.774.868.86 1.525 1.887 2.202 2.891.72 1.066 1.494 2.082 2.48 2.914.348.292.625.514.891.677-.802.09-2.14.11-3.054-.614zm1-6.44a.306.306 0 01.415-.287.302.302 0 01.2.288.306.306 0 01-.31.307.303.303 0 01-.304-.308zm3.11 1.596c-.2.081-.399.151-.59.16a1.245 1.245 0 01-.798-.254c-.274-.23-.47-.358-.552-.758a1.73 1.73 0 01.016-.588c.07-.327-.008-.537-.239-.727-.187-.156-.426-.199-.688-.199a.559.559 0 01-.254-.078c-.11-.054-.2-.19-.114-.358.028-.054.16-.186.192-.21.356-.202.767-.136 1.146.016.352.144.618.408 1.001.782.391.451.462.576.685.914.176.265.336.537.445.848.067.195-.019.354-.25.452z"></path></svg>
 				  
 				  </div>
@@ -613,7 +971,8 @@ class DeepSeekWebviewProvider {
 						<span>AI Chat&nbsp;&nbsp;</span>
 						<span class="menu-button ${isDark ? 'dark' : ''}">${sysType === 'darwin' ? '⌘' : 'Ctrl'}</span>
 						<span class="menu-button ${isDark ? 'dark' : ''}">${sysType === 'darwin' ? '⇧' : 'Alt'}</span>
-						<span class="menu-button ${isDark ? 'dark' : ''}">V</span></div></div> 
+						<span class="menu-button ${isDark ? 'dark' : ''}">V</span>
+					</div>
 				  </div>
 				  <div id="chatHistory">
 					${chatHistoryHTML}
@@ -644,6 +1003,122 @@ class DeepSeekWebviewProvider {
           </div>
 				<script>
 				  const vscode = acquireVsCodeApi();
+				  const historyButton = document.getElementById('historyButton');
+				  const settingsButton = document.getElementById('settingsButton');
+				  const newChatButton = document.getElementById('newChatButton');
+				  const historyPanel = document.getElementById('recentHistoryPanel');
+				  const closeHistoryPanel = document.getElementById('closeHistoryPanel');
+				  const clearAllHistoryBtn = document.getElementById('clearAllHistoryBtn');
+
+				  const toggleHistoryPanel = () => {
+					if (!historyPanel) return;
+					historyPanel.classList.toggle('show');
+				  };
+
+				  const hideHistoryPanel = () => {
+					if (!historyPanel) return;
+					historyPanel.classList.remove('show');
+				  };
+
+				  historyButton?.addEventListener('click', (event) => {
+					event.stopPropagation();
+					toggleHistoryPanel();
+				  });
+
+				  historyButton?.addEventListener('keydown', (event) => {
+					if (event.key === 'Enter' || event.key === ' ') {
+						event.preventDefault();
+						event.stopPropagation();
+						toggleHistoryPanel();
+					}
+				  });
+
+				  // 设置按钮点击事件
+				  settingsButton?.addEventListener('click', (event) => {
+					event.preventDefault();
+					event.stopPropagation();
+					vscode.postMessage({ command: 'openSettings' });
+				  });
+
+				  settingsButton?.addEventListener('keydown', (event) => {
+					if (event.key === 'Enter' || event.key === ' ') {
+						event.preventDefault();
+						event.stopPropagation();
+						vscode.postMessage({ command: 'openSettings' });
+					}
+				  });
+
+				  closeHistoryPanel?.addEventListener('click', (event) => {
+					event.stopPropagation();
+					hideHistoryPanel();
+				  });
+
+				  clearAllHistoryBtn?.addEventListener('click', (event) => {
+					event.stopPropagation();
+					if (confirm('确定要清除所有聊天历史吗？此操作不可恢复。')) {
+						vscode.postMessage({ command: 'clearHistory' });
+						hideHistoryPanel();
+					}
+				  });
+
+				  historyPanel?.addEventListener('click', (event) => {
+					event.stopPropagation();
+				  });
+
+				  const startNewSession = () => {
+					vscode.postMessage({ command: 'startNewSession' });
+					hideHistoryPanel();
+				  };
+
+				  newChatButton?.addEventListener('click', (event) => {
+					event.preventDefault();
+					event.stopPropagation();
+					startNewSession();
+				  });
+
+				  newChatButton?.addEventListener('keydown', (event) => {
+					if (event.key === 'Enter' || event.key === ' ') {
+						event.preventDefault();
+						event.stopPropagation();
+						startNewSession();
+					}
+				  });
+
+				  document.addEventListener('click', (event) => {
+					if (!historyPanel || !historyButton) {
+						return;
+					}
+					const target = event.target instanceof Node ? event.target : null;
+					if (target && (historyPanel.contains(target) || historyButton.contains(target))) {
+						return;
+					}
+					hideHistoryPanel();
+				  });
+
+				  const historyItems = document.querySelectorAll('.history-item');
+				  historyItems.forEach((item) => {
+					item.addEventListener('click', (event) => {
+						event.preventDefault();
+						const sessionId = item.dataset.sessionId;
+						hideHistoryPanel();
+						vscode.postMessage({ command: 'switchSession', sessionId: sessionId });
+						// 切换会话后更新视图
+						setTimeout(() => {
+							vscode.postMessage({ command: 'refreshView' });
+						}, 100);
+					});
+					item.addEventListener('keydown', (event) => {
+						if (event.key === 'Enter' || event.key === ' ') {
+							event.preventDefault();
+							const sessionId = item.dataset.sessionId;
+							hideHistoryPanel();
+							vscode.postMessage({ command: 'switchSession', sessionId: sessionId });
+							setTimeout(() => {
+								vscode.postMessage({ command: 'refreshView' });
+							}, 100);
+						}
+					});
+				  });
 	// 动态调整输入框高度
             const textarea = document.getElementById('inputField');
             textarea.addEventListener('input', () => {
@@ -739,23 +1214,145 @@ class DeepSeekWebviewProvider {
         }
     }
     // 添加到对话历史
-    addToHistory(userText, DeepSeekResponse) {
-        const chatHistory = this._chatHistory;
-        let flag = false;
-        chatHistory.map((item) => {
-            if (item.uuid === curUUID) {
-                flag = true;
-                item.DeepSeek = DeepSeekResponse;
-                return;
-            }
-        });
-        if (!flag) {
-            this._chatHistory.push({ user: userText, DeepSeek: DeepSeekResponse, uuid: curUUID });
+    addToHistory(userText, deepSeekResponse) {
+        // 查找当前会话
+        let currentSession = this._chatHistory.find(session => session.sessionId === this._currentSessionId);
+        const now = Date.now();
+        // 如果当前会话不存在，创建新会话
+        if (!currentSession) {
+            currentSession = {
+                sessionId: this._currentSessionId,
+                chatList: [],
+                timestamp: now
+            };
+            this._chatHistory.push(currentSession);
         }
-        // 保持历史记录数量不超过 50 条
-        if (this._chatHistory.length > 50) {
+        // 检查是否已存在当前UUID的条目（流式响应中）
+        let existingEntry = currentSession.chatList.find(entry => entry.entry.uuid === curUUID);
+        if (existingEntry) {
+            // 更新现有条目
+            existingEntry.entry.DeepSeek = deepSeekResponse;
+            existingEntry.entry.deepSeekTimestamp = now;
+        }
+        else {
+            // 创建新条目
+            const newEntry = {
+                entry: {
+                    user: userText,
+                    DeepSeek: deepSeekResponse,
+                    uuid: curUUID,
+                    userTimestamp: now,
+                    deepSeekTimestamp: now
+                }
+            };
+            currentSession.chatList.push(newEntry);
+        }
+        // 更新会话的时间戳为最后一次对话的时间
+        currentSession.timestamp = now;
+        // 保持历史记录最多 10 轮会话
+        while (this._chatHistory.length > MAX_HISTORY_ROUNDS) {
             this._chatHistory.shift();
         }
+        // 保存历史记录到持久化存储
+        this.saveHistory();
+    }
+    startNewSession() {
+        this._currentSessionId = createUUID();
+        // 为新会话创建初始条目，timestamp设置为当前时间
+        const newSession = {
+            sessionId: this._currentSessionId,
+            chatList: [],
+            timestamp: Date.now()
+        };
+        this._chatHistory.push(newSession);
+    }
+    switchSession(sessionId) {
+        if (sessionId && sessionId !== this._currentSessionId) {
+            this._currentSessionId = sessionId;
+        }
+    }
+    // 保存历史记录到全局状态
+    saveHistory() {
+        try {
+            this._context.globalState.update('deepseek.chatHistory', this._chatHistory);
+        }
+        catch (error) {
+            console.error('保存历史记录失败:', error);
+        }
+    }
+    // 从全局状态加载历史记录
+    loadHistory() {
+        try {
+            const savedHistory = this._context.globalState.get('deepseek.chatHistory', []);
+            if (Array.isArray(savedHistory)) {
+                // 检查是否是旧版本数据结构（扁平结构）
+                const firstItem = savedHistory[0];
+                const isOldStructure = savedHistory.length > 0 && firstItem && firstItem.user !== undefined && firstItem.DeepSeek !== undefined;
+                if (isOldStructure) {
+                    // 旧版本：扁平结构 [{user, DeepSeek, uuid, sessionId}]
+                    // 转换为新版本：嵌套结构 [{sessionId, chatList: [{entry: {user, DeepSeek, uuid}}]}]
+                    const sessionMap = new Map();
+                    savedHistory.forEach((item) => {
+                        const sessionId = item.sessionId || 'default';
+                        if (!sessionMap.has(sessionId)) {
+                            sessionMap.set(sessionId, []);
+                        }
+                        const itemTimestamp = item.uuid ? parseInt(item.uuid.split('-')[0] || '0') : Date.now();
+                        sessionMap.get(sessionId).push({
+                            entry: {
+                                user: item.user || '',
+                                DeepSeek: item.DeepSeek || '',
+                                uuid: item.uuid || createUUID(),
+                                userTimestamp: itemTimestamp,
+                                deepSeekTimestamp: itemTimestamp
+                            }
+                        });
+                    });
+                    // 转换为新结构数组
+                    this._chatHistory = Array.from(sessionMap.entries()).map(([sessionId, chatList]) => {
+                        const lastEntry = chatList[chatList.length - 1];
+                        return {
+                            sessionId,
+                            chatList,
+                            timestamp: lastEntry ? lastEntry.entry.deepSeekTimestamp : Date.now()
+                        };
+                    }).slice(-MAX_HISTORY_ROUNDS);
+                    console.log(`数据迁移完成：${savedHistory.length} 条记录迁移到 ${this._chatHistory.length} 个会话`);
+                }
+                else {
+                    // 新版本：嵌套结构
+                    this._chatHistory = savedHistory.slice(-MAX_HISTORY_ROUNDS).map((session) => ({
+                        sessionId: session.sessionId || createUUID(),
+                        chatList: Array.isArray(session.chatList) ? session.chatList : [],
+                        timestamp: session.timestamp || Date.now()
+                    }));
+                }
+                if (this._chatHistory.length > 0) {
+                    this._currentSessionId = this._chatHistory[this._chatHistory.length - 1].sessionId;
+                }
+                else {
+                    this._currentSessionId = createUUID();
+                }
+                // 保存转换后的数据
+                this.saveHistory();
+            }
+            else {
+                this._currentSessionId = createUUID();
+            }
+        }
+        catch (error) {
+            console.error('加载历史记录失败:', error);
+            this._chatHistory = [];
+            this._currentSessionId = createUUID();
+        }
+    }
+    // 清除历史记录
+    clearHistory() {
+        this._chatHistory = [];
+        this.startNewSession();
+        this.saveHistory();
+        // 立即更新 WebView 以清空显示内容
+        this.updateWebView();
     }
 }
 // 卸载插件时清理资源
