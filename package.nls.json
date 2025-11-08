@@ -1,0 +1,16 @@
+{
+  "extension.displayName": "DeepSeek Code Generator",
+  "extension.description": "Generate code using DeepSeek AI",
+  "config.provider.description": "Select API provider",
+  "config.banmaModel.description": "Banma DeepSeek model",
+  "config.apiKey.description": "Input API key",
+  "config.ollamaEndpoint.description": "Ollama API endpoint (e.g. http://localhost:11434)",
+  "config.ollamaModel.description": "Ollama model name",
+  "views.container.title": "DeepSeek",
+  "views.deepseekView.name": "DeepSeek",
+  "views.deepseekView.contextualTitle": "DeepSeek",
+  "views.explorer.deepseekExplorer.name": "DeepSeek",
+  "commands.deekseek.title": "Chat with DeepSeek",
+  "commands.toggleView.title": "Toggle to DeepSeek View",
+  "commands.category": "DeepSeek"
+}

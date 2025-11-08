@@ -14,6 +14,7 @@ exports.deactivate = deactivate;
 const vscode = require("vscode");
 const path = require("path");
 const os = require("os");
+const localize_1 = require("./localize");
 let curUUID = '';
 let stopRequest = false;
 const createUUID = () => {
@@ -149,10 +150,10 @@ function getModelResponseContent(jsonData) {
 // 获取 DeepSeek 回复
 function getDeepSeekResponse(viewProvider, prompt, onProgress) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         const { provider, apiKey, ollamaEndpoint, ollamaModel } = getApiConfig();
         if (provider !== 'ollama' && !apiKey) {
-            vscode.window.showErrorMessage(`请设置 ${provider} 的 API Key`);
+            vscode.window.showErrorMessage((0, localize_1.localize)('error.apiKeyRequired', 'Please set the API key for {0}.', provider));
             return;
         }
         console.log('DeepSeek 请求开始');
@@ -184,16 +185,16 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
                         if (line.includes('error')) {
                             try {
                                 const jsonData = JSON.parse(line);
-                                const errorMessage = ((_b = jsonData.error) === null || _b === void 0 ? void 0 : _b.message) || '未知错误';
-                                fullResponse += '\n\nRequest error:' + errorMessage;
+                                const errorMessage = ((_b = jsonData.error) === null || _b === void 0 ? void 0 : _b.message) || (0, localize_1.localize)('error.unknown', 'Unknown error');
+                                fullResponse += `\n\n${(0, localize_1.localize)('response.errorWithReason', 'Request error: {0}', errorMessage)}`;
                                 console.error('Request error:', errorMessage);
                                 onProgress(fullResponse);
-                                vscode.window.showErrorMessage('DeepSeek Code Generator:' + errorMessage);
+                                vscode.window.showErrorMessage((0, localize_1.localize)('error.requestNotification', 'DeepSeek Code Generator: {0}', errorMessage));
                                 stopRequest = false;
                             }
                             catch (parseError) {
                                 console.error('解析错误响应时失败:', parseError);
-                                fullResponse += '\n\nRequest error: 解析响应失败';
+                                fullResponse += `\n\n${(0, localize_1.localize)('response.parseError', 'Request error: failed to parse response')}`;
                             }
                             break;
                         }
@@ -208,7 +209,7 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
                             console.error('解析响应时失败:', parseError);
                         }
                         if (stopRequest) {
-                            fullResponse += '\n\nUser stop request';
+                            fullResponse += `\n\n${(0, localize_1.localize)('response.userStopped', 'User stopped the request')}`;
                             onProgress(fullResponse);
                             stopRequest = false;
                             reader === null || reader === void 0 ? void 0 : reader.cancel();
@@ -243,25 +244,14 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
                         if (line.includes('error') || line.includes('50501')) {
                             try {
                                 const jsonData = JSON.parse(line);
-                                if (jsonData.error) {
-                                    fullResponse += '\n\nRequest error:' + jsonData.error.message;
-                                    console.error('Request error:', jsonData.error.message);
-                                    vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.error.message);
-                                }
-                                else if (jsonData.message) {
-                                    fullResponse += '\n\nRequest error:' + jsonData.message;
-                                    console.error('Request error:', jsonData.message);
-                                    vscode.window.showErrorMessage('DeepSeek Code Generator:' + jsonData.message);
-                                }
-                                else {
-                                    fullResponse += '\n\nRequest error:' + JSON.stringify(jsonData);
-                                    console.error('Request error:', jsonData);
-                                    vscode.window.showErrorMessage('DeepSeek Code Generator:' + JSON.stringify(jsonData));
-                                }
+                                const requestErrorMessage = ((_d = jsonData.error) === null || _d === void 0 ? void 0 : _d.message) || jsonData.message || JSON.stringify(jsonData);
+                                fullResponse += `\n\n${(0, localize_1.localize)('response.errorWithReason', 'Request error: {0}', requestErrorMessage)}`;
+                                console.error('Request error:', requestErrorMessage);
+                                vscode.window.showErrorMessage((0, localize_1.localize)('error.requestNotification', 'DeepSeek Code Generator: {0}', requestErrorMessage));
                             }
                             catch (parseError) {
                                 console.error('解析错误响应时失败:', parseError);
-                                fullResponse += '\n\nRequest error: 解析响应失败';
+                                fullResponse += `\n\n${(0, localize_1.localize)('response.parseError', 'Request error: failed to parse response')}`;
                             }
                             onProgress(fullResponse);
                             break;
@@ -275,7 +265,7 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
                                 const text = getModelResponseContent(jsonData);
                                 fullResponse += text;
                                 if (stopRequest) {
-                                    fullResponse += '\n\nUser stop request';
+                                    fullResponse += `\n\n${(0, localize_1.localize)('response.userStopped', 'User stopped the request')}`;
                                     onProgress(fullResponse);
                                     stopRequest = false;
                                     reader === null || reader === void 0 ? void 0 : reader.cancel();
@@ -296,7 +286,7 @@ function getDeepSeekResponse(viewProvider, prompt, onProgress) {
         catch (error) {
             console.error('DeepSeek 请求失败:', error);
             viewProvider.showLoading(false);
-            onProgress('Request failed');
+            onProgress((0, localize_1.localize)('response.requestFailed', 'Request failed'));
             stopRequest = false;
         }
     });
@@ -307,8 +297,10 @@ function activate(context) {
     // 获取设置中的 API 密钥
     const { provider, apiKey } = getApiConfig();
     if (provider !== 'ollama' && !apiKey) {
-        vscode.window.showInformationMessage('API keys are not set. Click here to set.', { modal: true }, 'Open Settings').then((selection) => {
-            if (selection === 'Open Settings') {
+        const configureApiKeyMessage = (0, localize_1.localize)('info.apiKeyMissing', 'API keys are not set. Click here to configure them.');
+        const openSettingsLabel = (0, localize_1.localize)('action.openSettings', 'Open Settings');
+        vscode.window.showInformationMessage(configureApiKeyMessage, { modal: true }, openSettingsLabel).then((selection) => {
+            if (selection === openSettingsLabel) {
                 // 打开设置界面，让用户设置 API 密钥
                 vscode.commands.executeCommand('workbench.action.openSettings', 'Deepseek');
             }
@@ -321,7 +313,7 @@ function activate(context) {
     // 注册命令，触发与 DeepSeek 的交互
     let disposable = vscode.commands.registerCommand('extension.deekseek', () => __awaiter(this, void 0, void 0, function* () {
         // 获取用户输入
-        const input = yield vscode.window.showInputBox({ prompt: 'Please enter your question' });
+        const input = yield vscode.window.showInputBox({ prompt: (0, localize_1.localize)('input.prompt.question', 'Please enter your question') });
         if (input) {
             // viewProvider.showLoading(true);  // 显示加载提示
             let currentResponse = '';
@@ -357,7 +349,7 @@ function activate(context) {
             },
             getTreeItem: () => {
                 return {
-                    label: 'DeepSeek Settings',
+                    label: (0, localize_1.localize)('tree.settingsLabel', 'DeepSeek Settings'),
                     collapsibleState: vscode.TreeItemCollapsibleState.None,
                     contextValue: 'DeepSeekItem'
                 };
@@ -370,8 +362,8 @@ function activate(context) {
         if (event.affectsConfiguration('deepseek.apiKey')) {
             const apiKey = vscode.workspace.getConfiguration('deepseek').get('apiKey');
             if (apiKey) {
-                const apiKeyType = vscode.workspace.getConfiguration('deepseek').get('provider');
-                vscode.window.showInformationMessage(apiKeyType + ' API Key Update！');
+                const apiKeyType = vscode.workspace.getConfiguration('deepseek').get('provider') || '';
+                vscode.window.showInformationMessage((0, localize_1.localize)('info.apiKeyUpdated', '{0} API key updated!', apiKeyType));
             }
         }
     });
@@ -426,8 +418,7 @@ class DeepSeekWebviewProvider {
                     stopRequest = true;
                     return;
                 case 'clearHistory':
-                    this.clearHistory();
-                    this.updateWebView();
+                    this.handleClearHistory();
                     return;
                 case 'switchSession':
                     this.switchSession(message.sessionId);
@@ -475,6 +466,30 @@ class DeepSeekWebviewProvider {
                     .replace(/"/g, '&quot;')
                     .replace(/'/g, '&#39;');
             };
+            const localizedStrings = {
+                chatHeading: (0, localize_1.localize)('webview.heading', 'DeepSeek'),
+                tipLabel: (0, localize_1.localize)('webview.tip.label', 'AI Chat'),
+                historyUserLabel: (0, localize_1.localize)('webview.history.userLabel', 'You:'),
+                historyAssistantLabel: (0, localize_1.localize)('webview.history.assistantLabel', 'DeepSeek:'),
+                historyEmpty: (0, localize_1.localize)('webview.history.empty', 'No history yet'),
+                chatUserLabel: (0, localize_1.localize)('webview.chat.userLabel', 'You'),
+                chatAssistantLabel: (0, localize_1.localize)('webview.chat.assistantLabel', 'DeepSeek'),
+                chatEmpty: (0, localize_1.localize)('webview.chat.empty', 'No messages yet. Start a new conversation.'),
+                chatHistoryTooltip: (0, localize_1.localize)('webview.tooltip.chatHistory', 'Chat History'),
+                settingsTooltip: (0, localize_1.localize)('webview.tooltip.settings', 'Settings'),
+                newChatTooltip: (0, localize_1.localize)('webview.tooltip.newChat', 'New Chat'),
+                historyPanelTitle: (0, localize_1.localize)('webview.history.title', 'Latest 10 conversations'),
+                historyPanelCloseAria: (0, localize_1.localize)('webview.history.closeAria', 'Close history panel'),
+                historyClearAllTitle: (0, localize_1.localize)('webview.history.clearTitle', 'Clear all history'),
+                historyClearAllLabel: (0, localize_1.localize)('webview.history.clearLabel', 'Clear all history'),
+                generatingLabel: (0, localize_1.localize)('webview.progress.generating', 'Generating'),
+                stopLabel: (0, localize_1.localize)('webview.progress.stop', 'Stop'),
+                textareaPlaceholder: (0, localize_1.localize)('webview.input.placeholder', 'Input your question, e.g. Generate a countdown JavaScript code...'),
+                confirmClearHistory: (0, localize_1.localize)('webview.confirm.clearHistory', 'Are you sure you want to clear all chat history? This action cannot be undone.')
+            };
+            const scriptStrings = JSON.stringify({
+                confirmClearHistory: localizedStrings.confirmClearHistory
+            }).replace(/</g, '\\u003c');
             if (!this._currentSessionId && this._chatHistory.length > 0) {
                 this._currentSessionId = this._chatHistory[this._chatHistory.length - 1].sessionId;
             }
@@ -500,12 +515,33 @@ class DeepSeekWebviewProvider {
                 return bTime - aTime;
             })
                 .slice(0, MAX_HISTORY_ROUNDS);
-            // 格式化时间戳为 HH:mm
+            // 格式化时间戳，超过一天显示日期
             const formatTime = (timestamp) => {
                 const date = new Date(timestamp);
+                const now = new Date();
+                const diffInMs = now.getTime() - date.getTime();
+                const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
                 const hours = String(date.getHours()).padStart(2, '0');
                 const minutes = String(date.getMinutes()).padStart(2, '0');
-                return `${hours}:${minutes}`;
+                const timeStr = `${hours}:${minutes}`;
+                // 如果是今天，只显示时间
+                if (diffInDays === 0) {
+                    return timeStr;
+                }
+                // 超过一天，根据语言格式化日期
+                const language = vscode.env.language.toLowerCase();
+                const isChinese = language.startsWith('zh');
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                if (isChinese) {
+                    // 中文格式: YYYY-MM-DD HH:mm
+                    return `${year}-${month}-${day} ${timeStr}`;
+                }
+                else {
+                    // 英文格式: MM/DD/YYYY HH:mm
+                    return `${month}/${day}/${year} ${timeStr}`;
+                }
             };
             const recentHistoryHTML = recentSessions.length
                 ? recentSessions.map((entry, index) => {
@@ -514,14 +550,14 @@ class DeepSeekWebviewProvider {
                     return `
 						<div class="history-item" data-history-uuid="${entry.uuid}" data-session-id="${entry.sessionId}" tabindex="0" role="button">
 							<div class="history-item__time">${formatTime(entry.timestamp)}</div>
-							<div class="history-item__label">我：</div>
+							<div class="history-item__label">${escapeHtml(localizedStrings.historyUserLabel)}</div>
 							<div class="history-item__text">${escapeHtml(entry.user)}</div>
-							<div class="history-item__label">DeepSeek：</div>
+							<div class="history-item__label">${escapeHtml(localizedStrings.historyAssistantLabel)}</div>
 							<div class="history-item__text">${escapeHtml(entry.DeepSeek)}</div>
 						</div>
 					`;
                 }).join('')
-                : `<div class="history-empty">暂无历史记录</div>`;
+                : `<div class="history-empty">${escapeHtml(localizedStrings.historyEmpty)}</div>`;
             // 获取当前会话的对话历史
             const currentSession = this._chatHistory.find(session => session.sessionId === this._currentSessionId);
             const currentChatList = currentSession ? currentSession.chatList : [];
@@ -531,20 +567,20 @@ class DeepSeekWebviewProvider {
                     const deepSeekTime = chatItem.entry.deepSeekTimestamp ? formatTime(chatItem.entry.deepSeekTimestamp) : '';
                     return `
 				  <div class="chat-entry" data-history-uuid="${chatItem.entry.uuid}">
-					<div class="chat-entry__block">
-					  <div class="chat-entry__label">You</div>
+					  <div class="chat-entry__block">
+					  <div class="chat-entry__label">${escapeHtml(localizedStrings.chatUserLabel)}</div>
 					  <pre>${escapeHtml(chatItem.entry.user)}</pre>
 					</div>
 					<div class="chat-entry__time">${userTime}</div>
-					<div class="chat-entry__block">
-					  <div class="chat-entry__label">DeepSeek</div>
+					  <div class="chat-entry__block">
+					  <div class="chat-entry__label">${escapeHtml(localizedStrings.chatAssistantLabel)}</div>
 					  <pre style="padding:0"><code>${this.formatCode(chatItem.entry.DeepSeek)}</code></pre>
 					</div>
 					<div class="chat-entry__time">${deepSeekTime}</div>
 				  </div>
 				`;
                 }).join('')
-                : `<div class="chat-empty">暂无当前会话内容，开始新的对话吧。</div>`;
+                : `<div class="chat-empty">${escapeHtml(localizedStrings.chatEmpty)}</div>`;
             this._panelContent = `
 			<html>
 			  <head>
@@ -710,7 +746,7 @@ class DeepSeekWebviewProvider {
 					font-size: 11px;
 					color: var(--vscode-descriptionForeground);
 					margin-bottom: 4px;
-					text-align: right;
+					text-align: left;
 				  }
 				  .history-item__index {
 					font-size: 12px;
@@ -932,20 +968,20 @@ class DeepSeekWebviewProvider {
 			  <body>
 			  <div class="top-header">
 					<div id="icons">
-							<a id="historyButton" class="icon" title="Chat History" aria-label="Chat History" data-tooltip="Chat History" role="button" tabindex="0">
+							<a id="historyButton" class="icon" title="${escapeHtml(localizedStrings.chatHistoryTooltip)}" aria-label="${escapeHtml(localizedStrings.chatHistoryTooltip)}" data-tooltip="${escapeHtml(localizedStrings.chatHistoryTooltip)}" role="button" tabindex="0">
 								<i class="codicon codicon-history"></i>
 							</a>
-							<a id="settingsButton" class="icon" title="Settings" aria-label="Settings" data-tooltip="Settings">
+							<a id="settingsButton" class="icon" title="${escapeHtml(localizedStrings.settingsTooltip)}" aria-label="${escapeHtml(localizedStrings.settingsTooltip)}" data-tooltip="${escapeHtml(localizedStrings.settingsTooltip)}">
 								<i class="codicon codicon-gear"></i>
 							</a>
-							<a id="newChatButton" class="icon" title="New Chat" aria-label="New Chat" data-tooltip="New Chat" role="button" tabindex="0">
+							<a id="newChatButton" class="icon" title="${escapeHtml(localizedStrings.newChatTooltip)}" aria-label="${escapeHtml(localizedStrings.newChatTooltip)}" data-tooltip="${escapeHtml(localizedStrings.newChatTooltip)}" role="button" tabindex="0">
 								<i class="codicon codicon-chat-sparkle"></i>
 							</a>
 						</div>
 						<div id="recentHistoryPanel" class="history-panel" aria-live="polite">
 							<div class="history-panel__header">
-								<span>最近10条对话</span>
-								<button id="closeHistoryPanel" class="history-close" aria-label="Close history panel">
+								<span>${escapeHtml(localizedStrings.historyPanelTitle)}</span>
+								<button id="closeHistoryPanel" class="history-close" aria-label="${escapeHtml(localizedStrings.historyPanelCloseAria)}">
 									<i class="codicon codicon-close"></i>
 								</button>
 							</div>
@@ -953,9 +989,9 @@ class DeepSeekWebviewProvider {
 								${recentHistoryHTML}
 							</div>
 							<div class="history-panel__footer">
-								<button id="clearAllHistoryBtn" class="clear-all-btn" title="清除所有历史记录">
+								<button id="clearAllHistoryBtn" class="clear-all-btn" title="${escapeHtml(localizedStrings.historyClearAllTitle)}">
 									<i class="codicon codicon-trash"></i>
-									<span>清除所有历史</span>
+									<span>${escapeHtml(localizedStrings.historyClearAllLabel)}</span>
 								</button>
 							</div>
 						</div>
@@ -965,10 +1001,10 @@ class DeepSeekWebviewProvider {
 <svg fill="currentColor" fill-rule="evenodd" style="flex:none;line-height:1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.748 4.482c-.254-.124-.364.113-.512.234-.051.039-.094.09-.137.136-.372.397-.806.657-1.373.626-.829-.046-1.537.214-2.163.848-.133-.782-.575-1.248-1.247-1.548-.352-.156-.708-.311-.955-.65-.172-.241-.219-.51-.305-.774-.055-.16-.11-.323-.293-.35-.2-.031-.278.136-.356.276-.313.572-.434 1.202-.422 1.84.027 1.436.633 2.58 1.838 3.393.137.093.172.187.129.323-.082.28-.18.552-.266.833-.055.179-.137.217-.329.14a5.526 5.526 0 01-1.736-1.18c-.857-.828-1.631-1.742-2.597-2.458a11.365 11.365 0 00-.689-.471c-.985-.957.13-1.743.388-1.836.27-.098.093-.432-.779-.428-.872.004-1.67.295-2.687.684a3.055 3.055 0 01-.465.137 9.597 9.597 0 00-2.883-.102c-1.885.21-3.39 1.102-4.497 2.623C.082 8.606-.231 10.684.152 12.85c.403 2.284 1.569 4.175 3.36 5.653 1.858 1.533 3.997 2.284 6.438 2.14 1.482-.085 3.133-.284 4.994-1.86.47.234.962.327 1.78.397.63.059 1.236-.03 1.705-.128.735-.156.684-.837.419-.961-2.155-1.004-1.682-.595-2.113-.926 1.096-1.296 2.746-2.642 3.392-7.003.05-.347.007-.565 0-.845-.004-.17.035-.237.23-.256a4.173 4.173 0 001.545-.475c1.396-.763 1.96-2.015 2.093-3.517.02-.23-.004-.467-.247-.588zM11.581 18c-2.089-1.642-3.102-2.183-3.52-2.16-.392.024-.321.471-.235.763.09.288.207.486.371.739.114.167.192.416-.113.603-.673.416-1.842-.14-1.897-.167-1.361-.802-2.5-1.86-3.301-3.307-.774-1.393-1.224-2.887-1.298-4.482-.02-.386.093-.522.477-.592a4.696 4.696 0 011.529-.039c2.132.312 3.946 1.265 5.468 2.774.868.86 1.525 1.887 2.202 2.891.72 1.066 1.494 2.082 2.48 2.914.348.292.625.514.891.677-.802.09-2.14.11-3.054-.614zm1-6.44a.306.306 0 01.415-.287.302.302 0 01.2.288.306.306 0 01-.31.307.303.303 0 01-.304-.308zm3.11 1.596c-.2.081-.399.151-.59.16a1.245 1.245 0 01-.798-.254c-.274-.23-.47-.358-.552-.758a1.73 1.73 0 01.016-.588c.07-.327-.008-.537-.239-.727-.187-.156-.426-.199-.688-.199a.559.559 0 01-.254-.078c-.11-.054-.2-.19-.114-.358.028-.054.16-.186.192-.21.356-.202.767-.136 1.146.016.352.144.618.408 1.001.782.391.451.462.576.685.914.176.265.336.537.445.848.067.195-.019.354-.25.452z"></path></svg>
 				  
 				  </div>
-				  <h2 class="dark">DeepSeek</h2>
+				  <h2 class="dark">${escapeHtml(localizedStrings.chatHeading)}</h2>
 				  <div class="tip-wrap">
 				  	<div class="tip">
-						<span>AI Chat&nbsp;&nbsp;</span>
+						<span>${escapeHtml(localizedStrings.tipLabel)}&nbsp;&nbsp;</span>
 						<span class="menu-button ${isDark ? 'dark' : ''}">${sysType === 'darwin' ? '⌘' : 'Ctrl'}</span>
 						<span class="menu-button ${isDark ? 'dark' : ''}">${sysType === 'darwin' ? '⇧' : 'Alt'}</span>
 						<span class="menu-button ${isDark ? 'dark' : ''}">V</span>
@@ -982,7 +1018,7 @@ class DeepSeekWebviewProvider {
           <div id="progressContainer" style="display: ${showLoading ? 'flex' : 'none'};">
 		    <div class="block-flex">
 			<div class="circle-loader" id="progressCircle"></div>
-			<div >生成中</div>
+			<div >${escapeHtml(localizedStrings.generatingLabel)}</div>
 			</div>
 			<div class="block-flex" id="stopButtonBlock">
 			<div class="stop-button" id="stopButton">
@@ -993,16 +1029,17 @@ class DeepSeekWebviewProvider {
 				</g>
 			</svg>
 			</div>
-			<div>停止</div>
+			<div>${escapeHtml(localizedStrings.stopLabel)}</div>
 			</div>
             
             
           </div>
 				<div id="inputContainer">
-            <textarea id="inputField" placeholder="Input your question, eg: Generate a countdown JavaScript code..." rows="2"></textarea>
+            <textarea id="inputField" placeholder="${escapeHtml(localizedStrings.textareaPlaceholder)}" rows="2"></textarea>
           </div>
 				<script>
 				  const vscode = acquireVsCodeApi();
+				  const i18n = ${scriptStrings};
 				  const historyButton = document.getElementById('historyButton');
 				  const settingsButton = document.getElementById('settingsButton');
 				  const newChatButton = document.getElementById('newChatButton');
@@ -1053,13 +1090,13 @@ class DeepSeekWebviewProvider {
 					hideHistoryPanel();
 				  });
 
-				  clearAllHistoryBtn?.addEventListener('click', (event) => {
-					event.stopPropagation();
-					if (confirm('确定要清除所有聊天历史吗？此操作不可恢复。')) {
+				  if (clearAllHistoryBtn) {
+					clearAllHistoryBtn.addEventListener('click', (event) => {
+						event.stopPropagation();
 						vscode.postMessage({ command: 'clearHistory' });
 						hideHistoryPanel();
-					}
-				  });
+					});
+				  }
 
 				  historyPanel?.addEventListener('click', (event) => {
 					event.stopPropagation();
@@ -1345,6 +1382,18 @@ class DeepSeekWebviewProvider {
             this._chatHistory = [];
             this._currentSessionId = createUUID();
         }
+    }
+    // 处理清除历史记录的请求（带确认对话框）
+    handleClearHistory() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const confirmMessage = (0, localize_1.localize)('webview.confirm.clearHistory', 'Are you sure you want to clear all chat history? This action cannot be undone.');
+            const yesLabel = (0, localize_1.localize)('action.yes', 'Yes');
+            const noLabel = (0, localize_1.localize)('action.no', 'No');
+            const selection = yield vscode.window.showWarningMessage(confirmMessage, { modal: true }, yesLabel, noLabel);
+            if (selection === yesLabel) {
+                this.clearHistory();
+            }
+        });
     }
     // 清除历史记录
     clearHistory() {

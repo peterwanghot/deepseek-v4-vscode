@@ -77,7 +77,7 @@
 
 使用教程:
 
-<https://code.wenwen-ai.com/>
+[https://code.wenwen-ai.com/](https://code.wenwen-ai.com/)
 
 ### 斑码云算力平台! 满血 671b Deepseek
 
@@ -91,7 +91,7 @@
 
 申请api地址:
 
-<https://cloud.wenwen-ai.com/token>
+[https://cloud.wenwen-ai.com/token](https://cloud.wenwen-ai.com/token)
 
 ### deepseek
 
@@ -135,7 +135,24 @@
 
 #### 惊喜预告
 
-本月底会上线一个deepseek 满血版 API 调用渠道，敬请期待！
+##### 本月有一个智能体开发训练营,包含最近最火爆的N8N,保姆级教学
+
+**开营周期**：2025.11.11 - 2025.12.31
+
+##### 训练营介绍
+
+技术更新迭代，怕被行业抛下？智能体特训营带你 50 天掌握核心能力，薪资涨幅 30% 不是梦！从‘技术焦虑’到‘职场竞争力爆棚’，就看你要不要抓住这次机会～
+
+从智能体入门开始教，涵盖智能体入门、n8n、智能体流量、考证等核心模块，从零开始， 没接触过的小伙伴也不用担心！
+
+一天2元钱就能学到当前最前沿的智能体教程，以及实战、考证、变现
+
+![image](https://i.111666.best/image/u6sp7cePcU2SxTpjwVyLfz.png)
+
+![image](https://i.111666.best/image/QVN5UoyKnkx3hRQhGbZSNs.png)
+![image](https://i.111666.best/image/JOjN2NxRpz4osEqFQ83k5O.png)
+![image](https://i.111666.best/image/9z3tofYeXt7CrzlrQv1XQZ.png)
+![image](https://i.111666.best/image/5c7DDE7jXg42m8XYA6XYWo.jpg)
 
 # DeepSeek Code Generator
 

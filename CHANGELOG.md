@@ -1,5 +1,13 @@
 # 变更记录
 
+## [1.3.0] - 2025-11-08
+
+### 新增
+
+* 界面支持多语言
+* 支持保存会话历史
+* UI细节优化
+
 ## [1.2.3] - 2025-07-19
 
 ### 新增
@@ -64,6 +72,14 @@
 * 支持JavaScript/Python/C++/C#/Java/Go/Rust/PHP/Ruby/Swift/Objective-C/TypeScript/SQL/HTML/CSS/JSON/YAML/Markdown/LaTeX/Bash/Shell等代码生成。
 
 # Changelog
+
+## [1.3.0] - 2025-11-08
+
+### Add
+
+* multi-language support
+* support save history chats
+* UI Details Enhancement
 
 ## [1.2.1] - 2025-03-25
 

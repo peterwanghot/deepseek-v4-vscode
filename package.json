@@ -1,7 +1,7 @@
 {
   "name": "deepseek-code-generator",
-  "displayName": "DeepSeek Code Generator",
-  "description": "Generate code using DeepSeek AI",
+  "displayName": "%extension.displayName%",
+  "description": "%extension.description%",
   "version": "1.3.0",
   "author": "David Dai",
   "publisher": "DavidDai",
@@ -27,27 +27,27 @@
             "banma"
           ],
           "default": "banma",
-          "description": "Select API provider"
+          "description": "%config.provider.description%"
         },
         "deepseek.banmaModel": {
           "type": "string",
           "default": "deepseek-reasoner",
-          "description": "Banma deepseek model"
+          "description": "%config.banmaModel.description%"
         },
         "deepseek.apiKey": {
           "type": "string",
           "default": "",
-          "description": "Input API key"
+          "description": "%config.apiKey.description%"
         },
         "deepseek.ollamaEndpoint": {
           "type": "string",
           "default": "http://203.83.237.172:11434",
-          "description": "Ollama API endpoint (e.g. http://localhost:11434)"
+          "description": "%config.ollamaEndpoint.description%"
         },
         "deepseek.ollamaModel": {
           "type": "string",
           "default": "deepseek-r1:32b",
-          "description": "Ollama model name"
+          "description": "%config.ollamaModel.description%"
         }
       }
     },
@@ -55,7 +55,7 @@
       "activitybar": [
         {
           "id": "deepseekContainer",
-          "title": "DeepSeek",
+          "title": "%views.container.title%",
           "icon": "media/deepseek.svg",
           "when": "view == deepseekContainer"
         }
@@ -65,28 +65,28 @@
       "deepseekContainer": [
         {
           "id": "deepseekView",
-          "name": "DeepSeek",
+          "name": "%views.deepseekView.name%",
           "type": "webview",
-          "contextualTitle": "DeepSeek"
+          "contextualTitle": "%views.deepseekView.contextualTitle%"
         }
       ],
       "explorer": [
         {
           "id": "deepseekExplorer",
-          "name": "DeepSeek"
+          "name": "%views.explorer.deepseekExplorer.name%"
         }
       ]
     },
     "commands": [
       {
         "command": "extension.deekseek",
-        "title": "Chat with DeepSeek",
-        "category": "DeepSeek"
+        "title": "%commands.deekseek.title%",
+        "category": "%commands.category%"
       },
       {
         "command": "extension.toggleToDeepseekView",
-        "title": "Toggle to DeepSeek View",
-        "category": "DeepSeek"
+        "title": "%commands.toggleView.title%",
+        "category": "%commands.category%"
       }
     ],
     "keybindings": [
