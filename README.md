@@ -116,6 +116,10 @@ DeepSeek Code Generator 是一个 VS Code 编程助手插件，支持在侧边�
 
 ### 支持与推广
 
+#### 发布者
+
+[**Peter' Studio**](https://marketplace.visualstudio.com/publishers/DavidDai)
+
 #### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
 
 #### 微信
@@ -273,6 +277,10 @@ The extension uses the official DeepSeek API base URL `https://api.deepseek.com`
 Apply for an API key at [https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys "Apply API").
 
 ### Support & Promotion
+
+#### Publisher
+
+[**Peter' Studio**](https://marketplace.visualstudio.com/publishers/DavidDai)
 
 #### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
 
