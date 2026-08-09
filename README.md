@@ -1,12 +1,4 @@
-# DeepSeek Code Generator / DeepSeek 代码生成器
-
-DeepSeek Code Generator 是一个 VS Code 编程助手插件，支持在侧边栏中与 DeepSeek 对话，并围绕选中代码进行解释、修复、重构、生成注释、生成测试和代码审查。
-
-**重磅更新：全面支持 DeepSeek V4 接入。**
-
-DeepSeek Code Generator is a VS Code assistant extension for chatting with DeepSeek in the sidebar and working with selected code: explain, fix, refactor, comment, test, and review.
-
-**Major update: full support for DeepSeek V4 integration.**
+# DeepSeek Code Generator
 
 - [中文说明](#中文说明)
 - [English](#english)
@@ -14,6 +6,10 @@ DeepSeek Code Generator is a VS Code assistant extension for chatting with DeepS
 ---
 
 ## 中文说明
+
+DeepSeek Code Generator 是一个 VS Code 编程助手插件，支持在侧边栏中与 DeepSeek 对话，并围绕选中代码进行解释、修复、重构、生成注释、生成测试和代码审查。
+
+**重磅更新：全面支持 DeepSeek V4 接入。**
 
 ### 核心功能
 
@@ -115,9 +111,44 @@ DeepSeek Code Generator is a VS Code assistant extension for chatting with DeepS
 
 [https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys "申请 API")
 
+### 支持与推广
+
+#### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
+
+#### 微信
+
+![image](https://i.111666.best/image/4emw83S75jILsJtuybd2ov.png)
+
+#### 打赏通道
+
+![image](https://i.111666.best/image/RCob7GIR7viigc785RHgKh.png)
+
+#### AI 群星会
+
+如果你希望继续系统学习 AI 编程、智能体、知识库搭建和企业落地实践，也可以了解一下 **AI 群星会**。这是一个中文 AI 实战学习社群，面向想把 AI 真正用到工作、产品和项目中的开发者与创作者。
+
+- **六大学习方向**：AI 编程、智能体、知识库搭建、企业落地、获客增长、副业变现。
+- **实战训练**：定期组织 AI 实战训练营和主题分享。
+- **内容更新**：持续更新教程、案例、工具玩法和落地经验。
+- **同行交流**：连接正在实践 AI 的开发者、创作者和业务同学。
+
+如果感兴趣，可以通过上面的邮箱或微信联系我。
+
+![AI 群星会学习方向](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/01.jpg)
+
+![AI 群星会实战训练营](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/02.jpg)
+
+![AI 群星会介绍](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/03.jpg)
+
+![AI 群星会扫码加入](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/04.jpg)
+
 ---
 
 ## English
+
+DeepSeek Code Generator is a VS Code assistant extension for chatting with DeepSeek in the sidebar and working with selected code: explain, fix, refactor, comment, test, and review.
+
+**Major update: full support for DeepSeek V4 integration.**
 
 ### Features
 
@@ -219,40 +250,7 @@ Keep `deepseek.baseUrl` unchanged unless you use a compatible custom gateway.
 
 Apply for an API key at [https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys "Apply API").
 
----
-
-## 支持与推广
-
-#### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
-
-#### 微信
-
-![image](https://i.111666.best/image/4emw83S75jILsJtuybd2ov.png)
-
-#### 打赏通道
-
-![image](https://i.111666.best/image/RCob7GIR7viigc785RHgKh.png)
-
-#### AI 群星会
-
-如果你希望继续系统学习 AI 编程、智能体、知识库搭建和企业落地实践，也可以了解一下 **AI 群星会**。这是一个中文 AI 实战学习社群，面向想把 AI 真正用到工作、产品和项目中的开发者与创作者。
-
-- **六大学习方向**：AI 编程、智能体、知识库搭建、企业落地、获客增长、副业变现。
-- **实战训练**：定期组织 AI 实战训练营和主题分享。
-- **内容更新**：持续更新教程、案例、工具玩法和落地经验。
-- **同行交流**：连接正在实践 AI 的开发者、创作者和业务同学。
-
-如果感兴趣，可以通过上面的邮箱或微信联系我。
-
-![AI 群星会学习方向](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/01.jpg)
-
-![AI 群星会实战训练营](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/02.jpg)
-
-![AI 群星会介绍](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/03.jpg)
-
-![AI 群星会扫码加入](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/04.jpg)
-
-## Support & Promotion
+### Support & Promotion
 
 #### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
 
