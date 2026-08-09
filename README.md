@@ -244,6 +244,14 @@ Apply for an API key at [https://platform.deepseek.com/api_keys](https://platfor
 
 如果感兴趣，可以通过上面的邮箱或微信联系我。
 
+![AI 群星会学习方向](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/01.jpg)
+
+![AI 群星会实战训练营](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/02.jpg)
+
+![AI 群星会介绍](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/03.jpg)
+
+![AI 群星会扫码加入](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/04.jpg)
+
 ## Support & Promotion
 
 #### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
