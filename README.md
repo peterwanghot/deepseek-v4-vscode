@@ -108,6 +108,8 @@ DeepSeek Code Generator 是一个 VS Code 编程助手插件，支持在侧边�
 
 如果没有使用自定义兼容网关，`deepseek.baseUrl` 保持默认值即可。
 
+默认使用 DeepSeek 官方 API 地址 `https://api.deepseek.com`，国内和海外用户通常使用同一个地址；如使用第三方兼容网关，可在设置中自定义 Base URL。
+
 ### API Key 申请
 
 [https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys "申请 API")
@@ -263,6 +265,8 @@ Available models:
 - `deepseek-v4-pro`
 
 Keep `deepseek.baseUrl` unchanged unless you use a compatible custom gateway.
+
+The extension uses the official DeepSeek API base URL `https://api.deepseek.com` by default. This is generally the same for users inside and outside China. If you use a third-party compatible gateway, you can customize the Base URL in settings.
 
 ### API Key
 
