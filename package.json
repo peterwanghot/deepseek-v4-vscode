@@ -5,6 +5,10 @@
   "version": "2.0.0",
   "author": "David Dai",
   "publisher": "DavidDai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peterwanghot/deepseek-v4-vscode.git"
+  },
   "icon": "media/deepseek-color-128.png",
   "private": true,
   "license": "MIT",
