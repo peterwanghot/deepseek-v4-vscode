@@ -133,13 +133,29 @@ DeepSeek Code Generator 是一个 VS Code 编程助手插件，支持在侧边�
 - **内容更新**：持续更新教程、案例、工具玩法和落地经验。
 - **同行交流**：连接正在实践 AI 的开发者、创作者和业务同学。
 
-如果感兴趣，可以通过上面的邮箱或微信联系我。
+如果你想进一步了解或加入社群，可以扫描下方第四张图片中的知识星球邀请二维码，直接加入 AI 群星会。
+
+##### 01. 六大学习方向
+
+围绕 AI 编程、智能体、知识库搭建、企业落地、获客增长、副业变现，建立更完整的 AI 实战能力。
 
 ![AI 群星会学习方向](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/01.jpg)
 
+##### 02. 实战训练营
+
+社群会持续组织 AI 实战训练营和主题打卡，帮助你把工具、流程和项目真正跑起来。
+
 ![AI 群星会实战训练营](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/02.jpg)
 
+##### 03. 社群权益介绍
+
+了解 AI 群星会的会员权益、内容更新、实战分享和同行交流方式。
+
 ![AI 群星会介绍](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/03.jpg)
+
+##### 04. 知识星球邀请二维码
+
+扫描图片中的知识星球邀请二维码，可以直接加入 AI 群星会。
 
 ![AI 群星会扫码加入](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/04.jpg)
 
