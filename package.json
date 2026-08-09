@@ -2,7 +2,7 @@
   "name": "deepseek-code-generator",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "author": "David Dai",
   "publisher": "DavidDai",
   "icon": "media/deepseek-color-128.png",
@@ -17,37 +17,31 @@
     "configuration": {
       "type": "object",
       "properties": {
-        "deepseek.provider": {
+        "deepseek.model": {
           "type": "string",
           "enum": [
-            "deepseek",
-            "volcengine",
-            "siliconflow",
-            "ollama",
-            "banma"
+            "deepseek-v4-flash",
+            "deepseek-v4-pro"
           ],
-          "default": "banma",
-          "description": "%config.provider.description%"
-        },
-        "deepseek.banmaModel": {
-          "type": "string",
-          "default": "deepseek-reasoner",
-          "description": "%config.banmaModel.description%"
+          "default": "deepseek-v4-flash",
+          "description": "%config.model.description%"
         },
         "deepseek.apiKey": {
           "type": "string",
           "default": "",
           "description": "%config.apiKey.description%"
         },
-        "deepseek.ollamaEndpoint": {
+        "deepseek.baseUrl": {
           "type": "string",
-          "default": "http://203.83.237.172:11434",
-          "description": "%config.ollamaEndpoint.description%"
+          "default": "https://api.deepseek.com",
+          "description": "%config.baseUrl.description%"
         },
-        "deepseek.ollamaModel": {
-          "type": "string",
-          "default": "deepseek-r1:32b",
-          "description": "%config.ollamaModel.description%"
+        "deepseek.maxTokens": {
+          "type": "number",
+          "default": 4096,
+          "minimum": 256,
+          "maximum": 8192,
+          "description": "%config.maxTokens.description%"
         }
       }
     },
@@ -84,11 +78,82 @@
         "category": "%commands.category%"
       },
       {
+        "command": "extension.deepseek.explainSelection",
+        "title": "%commands.explainSelection.title%",
+        "category": "%commands.category%"
+      },
+      {
+        "command": "extension.deepseek.refactorSelection",
+        "title": "%commands.refactorSelection.title%",
+        "category": "%commands.category%"
+      },
+      {
+        "command": "extension.deepseek.fixSelection",
+        "title": "%commands.fixSelection.title%",
+        "category": "%commands.category%"
+      },
+      {
+        "command": "extension.deepseek.generateComments",
+        "title": "%commands.generateComments.title%",
+        "category": "%commands.category%"
+      },
+      {
+        "command": "extension.deepseek.generateTests",
+        "title": "%commands.generateTests.title%",
+        "category": "%commands.category%"
+      },
+      {
+        "command": "extension.deepseek.reviewSelection",
+        "title": "%commands.reviewSelection.title%",
+        "category": "%commands.category%"
+      },
+      {
         "command": "extension.toggleToDeepseekView",
         "title": "%commands.toggleView.title%",
         "category": "%commands.category%"
       }
     ],
+    "submenus": [
+      {
+        "id": "deepseek.editorContext",
+        "label": "%menus.deepseekContext.title%"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "deepseek.editorContext",
+          "group": "deepseek@1",
+          "when": "editorHasSelection"
+        }
+      ],
+      "deepseek.editorContext": [
+        {
+          "command": "extension.deepseek.explainSelection",
+          "group": "deepseek@1"
+        },
+        {
+          "command": "extension.deepseek.refactorSelection",
+          "group": "deepseek@2"
+        },
+        {
+          "command": "extension.deepseek.fixSelection",
+          "group": "deepseek@3"
+        },
+        {
+          "command": "extension.deepseek.generateComments",
+          "group": "deepseek@4"
+        },
+        {
+          "command": "extension.deepseek.generateTests",
+          "group": "deepseek@5"
+        },
+        {
+          "command": "extension.deepseek.reviewSelection",
+          "group": "deepseek@6"
+        }
+      ]
+    },
     "keybindings": [
       {
         "command": "extension.deekseek",
@@ -107,12 +172,16 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "lint": "eslint src --ext ts",
-    "test": "npm run compile && node ./out/test/runTest.js"
+    "lint": "eslint src",
+    "test": "npm run compile && vscode-test"
   },
   "devDependencies": {
     "@types/node": "^22.12.0",
     "@types/vscode": "~1.75.0",
+    "@typescript-eslint/eslint-plugin": "^8.66.0",
+    "@typescript-eslint/parser": "^8.66.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
     "eslint": "^8.0.1",
     "typescript": "~5.6.2"
   }

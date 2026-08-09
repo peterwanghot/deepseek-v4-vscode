@@ -1,127 +1,227 @@
-# DeepSeek 代码生成器
+# DeepSeek Code Generator / DeepSeek 代码生成器
 
-这个插件可以帮助你更快速地与 DeepSeek 交互，并自动生成代码。支持各种格式的代码: JavaScript/Python/C++/C#/Java/Go/Rust/PHP/Ruby/Swift/Objective-C/TypeScript/SQL/HTML/CSS/JSON/YAML/Markdown/LaTeX/Bash/Shell...
+DeepSeek Code Generator 是一个 VS Code 编程助手插件，支持在侧边栏中与 DeepSeek 对话，并围绕选中代码进行解释、修复、重构、生成注释、生成测试和代码审查。
+
+**重磅更新：全面支持 DeepSeek V4 接入。**
+
+DeepSeek Code Generator is a VS Code assistant extension for chatting with DeepSeek in the sidebar and working with selected code: explain, fix, refactor, comment, test, and review.
+
+**Major update: full support for DeepSeek V4 integration.**
+
+- [中文说明](#中文说明)
+- [English](#english)
 
 ---
 
-## 功能
+## 中文说明
 
-- **对话功能**: 可以和DeepSeek进行对话。
-- 生成代码: 通过和DeepSeek对话，生产代码。如：帮我生成一个js的倒计时代码
+### 核心功能
 
----
+- **侧边栏对话**：点击 VS Code 左侧边栏的 DeepSeek 图标即可打开插件。
+- **代码解析**：选中代码后让 DeepSeek 解释代码行为、关键控制流和潜在问题。
+- **代码审查**：针对选中代码输出按严重程度排序的审查结果。
+- **代码修复**：对选中代码进行 bug 修复，并优先返回修复后的代码。
+- **回复操作**：AI 回复支持一键复制、插入到光标位置、替换当前选区、新建文件。
+- **聊天历史**：支持查看最近 10 条对话，并可清除历史。
+- **可配置模型**：支持配置 API Key、Base URL、模型和最大输出 token 数。
+- **语言跟随**：默认根据 VS Code 当前显示语言回复，代码、标识符、命令和路径保持原样。
 
-## 安装
+### 界面截图
 
-### 通过 Visual Studio Code 市场安装
+#### 01. 主界面（新对话界面）
+
+点击左侧边栏的 DeepSeek 图标开启插件。插件界面右上角提供最近 10 条对话、设置、新对话按钮。
+
+![主界面（新对话界面）](media/screenshot/01.png)
+
+#### 02. 代码解析
+
+选中代码后，让 DeepSeek 解释代码用途、主要行为、关键控制流和潜在 bug。
+
+![代码解析](media/screenshot/02.png)
+
+#### 03. 代码审查
+
+对选中代码进行代码审查，按严重程度输出问题、原因和修复建议。
+
+![代码审查](media/screenshot/03.png)
+
+#### 04. 复制/插入/替换/新建文件按钮
+
+每条 AI 回复右上角提供复制、插入、替换、新建文件按钮。鼠标悬浮时会显示功能提示。
+
+![复制/插入/替换/新建文件按钮](media/screenshot/04.png)
+
+#### 05. 聊天历史
+
+打开历史面板后，可查看最近 10 条对话，并支持清除全部历史。
+
+![聊天历史](media/screenshot/05.png)
+
+#### 06. 设置项
+
+在 VS Code 设置中配置 DeepSeek API Key、Base URL、Max Tokens 和模型。
+
+![设置项](media/screenshot/06.png)
+
+### 安装
 
 1. 打开 VS Code。
-2. 进入 **扩展视图**，点击左侧边栏的扩展图标，或者按快捷键 `Ctrl+Shift+X`。
-3. 搜索 DeepSeek Code Generator。
-4. 点击 **安装** 按钮。
+2. 进入 **扩展** 视图，或使用快捷键 `Ctrl+Shift+X`。
+3. 搜索 **DeepSeek Code Generator**。
+4. 点击 **安装**。
 
-## 基本用法
+### 基本用法
 
-1. 打开你的 VS Code。
-2. 你可以在命令面板中输入命令 **Chat with DeepSeek** 向DeepSeek提问。
+1. 点击左侧边栏的 DeepSeek 图标打开聊天界面。
+2. 在输入框中输入问题，点击发送按钮开始对话。
+3. 在编辑器中选中代码，右键选择 DeepSeek 相关命令：
+   - 解释选中代码
+   - 重构选中代码
+   - 修复选中代码
+   - 为选中代码生成注释
+   - 为选中代码生成测试
+   - 评审选中代码
+4. 在 AI 回复右上角点击操作按钮：
+   - **复制**：复制完整 AI 回复到剪贴板。
+   - **插入**：把回复内容插入到当前光标位置。
+   - **替换**：用回复内容替换当前选区。
+   - **新建文件**：将回复内容打开为一个新的未保存文件。
 
-## 快捷键
+### 快捷键
 
-如果插件有快捷键，可以在此处列出。例如：
+- `Cmd+Shift+V` / `Ctrl+Alt+V`：打开 DeepSeek 侧边栏。
+- `Cmd+Shift+T` / `Ctrl+Alt+T`：触发与 DeepSeek 对话命令。
 
-- `Ctrl/Cmd+Shift+v`：触发与DeepSeek进行对话。
-- `Ctrl/Cmd+Shift+t`：打开命令面板，向DeepSeek提问。
-
-## 配置
-
-### 非Ollama
-
-第一次使用会让填写apiKey。强力推荐选择斑码云算力平台! 满血 671b Deepseek！
-
-![image](https://i.111666.best/image/GXpX6Jbw4dgKSE5w5jLhC9.png)
-
-```json
-{
-  "deepseek.apiKey": "your-api-key-here"
-}
-```
-
-### 非Ollama Banma
+### 配置
 
 ```json
 {
-  "deepseek.banmaModel": "deepseek-reasoner"
+  "deepseek.apiKey": "your-api-key-here",
+  "deepseek.baseUrl": "https://api.deepseek.com",
+  "deepseek.model": "deepseek-v4-flash",
+  "deepseek.maxTokens": 4096
 }
 ```
 
-### Ollama
+可选模型：
+
+- `deepseek-v4-flash`
+- `deepseek-v4-pro`
+
+如果没有使用自定义兼容网关，`deepseek.baseUrl` 保持默认值即可。
+
+### API Key 申请
+
+[https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys "申请 API")
+
+---
+
+## English
+
+### Features
+
+- **Sidebar chat**: Open the extension from the DeepSeek icon in the VS Code Activity Bar.
+- **Code explanation**: Explain selected code, important behavior, control flow, and possible issues.
+- **Code review**: Review selected code and list findings by severity.
+- **Code fixing**: Fix bugs in selected code and return corrected code first.
+- **Response actions**: Copy, insert at cursor, replace selection, or create a new file from an AI response.
+- **Chat history**: View the latest 10 conversations and clear history when needed.
+- **Configurable model**: Configure API Key, Base URL, model, and max tokens.
+- **Language matching**: Replies follow the current VS Code display language while preserving code, identifiers, commands, and paths.
+
+### Screenshots
+
+#### 01. New Chat
+
+Open the extension from the DeepSeek icon in the left Activity Bar. The top-right buttons provide recent conversations, settings, and new chat.
+
+![New Chat](media/screenshot/01.png)
+
+#### 02. Code Explanation
+
+Ask DeepSeek to explain selected code, including behavior, control flow, and possible bugs.
+
+![Code Explanation](media/screenshot/02.png)
+
+#### 03. Code Review
+
+Review selected code with severity-based findings and suggested fixes.
+
+![Code Review](media/screenshot/03.png)
+
+#### 04. Response Actions
+
+Each AI response includes action buttons for copy, insert, replace, and new file. Hovering a button shows its tooltip.
+
+![Response Actions](media/screenshot/04.png)
+
+#### 05. Chat History
+
+Open the history panel to view the latest 10 conversations and clear all history.
+
+![Chat History](media/screenshot/05.png)
+
+#### 06. Settings
+
+Configure DeepSeek API Key, Base URL, Max Tokens, and model in VS Code Settings.
+
+![Settings](media/screenshot/06.png)
+
+### Installation
+
+1. Open VS Code.
+2. Go to **Extensions**, or use `Ctrl+Shift+X`.
+3. Search for **DeepSeek Code Generator**.
+4. Click **Install**.
+
+### Basic Usage
+
+1. Click the DeepSeek icon in the left Activity Bar to open the chat view.
+2. Type a prompt and click the send button.
+3. Select code in the editor and use the DeepSeek context menu commands:
+   - Explain Selected Code
+   - Refactor Selected Code
+   - Fix Selected Code
+   - Generate Comments for Selected Code
+   - Generate Tests for Selected Code
+   - Review Selected Code
+4. Use the action buttons on each AI response:
+   - **Copy**: copy the full AI response to the clipboard.
+   - **Insert**: insert the response at the current cursor position.
+   - **Replace**: replace the current selection with the response.
+   - **New File**: open the response as a new unsaved file.
+
+### Keyboard Shortcuts
+
+- `Cmd+Shift+V` / `Ctrl+Alt+V`: open the DeepSeek sidebar.
+- `Cmd+Shift+T` / `Ctrl+Alt+T`: trigger the DeepSeek chat command.
+
+### Configuration
 
 ```json
 {
-    "deepseek.ollamaEndpoint": "http://localhost:11434"
-},
-{
-    "deepseek.ollamaModel": "deepseek-r1:32b"
+  "deepseek.apiKey": "your-api-key-here",
+  "deepseek.baseUrl": "https://api.deepseek.com",
+  "deepseek.model": "deepseek-v4-flash",
+  "deepseek.maxTokens": 4096
 }
 ```
 
-## API key 申请
+Available models:
 
-### 重磅推荐! 斑码云代码平台! claude code免费体验
+- `deepseek-v4-flash`
+- `deepseek-v4-pro`
 
-#### 注册就送 $20 体验额度
+Keep `deepseek.baseUrl` unchanged unless you use a compatible custom gateway.
 
-注册:
+### API Key
 
-[https://code.wenwen-ai.com/register?aff=2u50]()
+Apply for an API key at [https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys "Apply API").
 
-使用教程:
+---
 
-[https://code.wenwen-ai.com/](https://code.wenwen-ai.com/)
-
-### 斑码云算力平台! 满血 671b Deepseek
-
-限时一个月免费使用满血版deepseek
-
-### banma
-
-注册:
-
-[https://cloud.wenwen-ai.com/register?aff=Z4Yt](https://cloud.wenwen-ai.com/register?aff=Z4Yt)
-
-申请api地址:
-
-[https://cloud.wenwen-ai.com/token](https://cloud.wenwen-ai.com/token)
-
-### deepseek
-
-[https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys "申请API")
-
-### siliconflow 硅基流动
-
-**注册:**
-
-[**https://cloud.siliconflow.cn/i/Uw8MJek7**](https://cloud.siliconflow.cn/i/Uw8MJek7)
-
-**申请API key:**
-
-**[https://cloud.siliconflow.cn/account/ak]()**
-
-### volceengine 火山引擎 目前最稳定的API
-
-**注册:**
-
-[https://console.volcengine.com/ark/region:ark+cn-beijing/experience/chat](https://console.volcengine.com/ark/region:ark+cn-beijing/experience/chat)
-
-点击api接入 再点击确认接入
-
-**申请API key**
-
-[https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D]()
-
-点击 API调用, 在新页面 找到 '选择 API Key 并复制' 并点击
-
-### 支持
+## 支持与推广
 
 #### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
 
@@ -154,68 +254,7 @@
 ![image](https://i.111666.best/image/9z3tofYeXt7CrzlrQv1XQZ.png)
 ![image](https://i.111666.best/image/5c7DDE7jXg42m8XYA6XYWo.jpg)
 
-# DeepSeek Code Generator
-
-This plugin helps you interact with DeepSeek more quickly and automatically generate code. Supports various code formats: JavaScript/Python/C++/C#/Java/Go/Rust/PHP/Ruby/Swift/Objective-C/TypeScript/SQL/HTML/CSS/JSON/YAML/Markdown/LaTeX/Bash/Shell...
-
----
-
-## Features
-
-- **Conversation Function**: You can have a conversation with DeepSeek.
-- **Code Generation**: By conversing with DeepSeek, you can generate code. For example: "Help me generate a countdown timer in JS."
-
----
-
-## Installation
-
-### Install via Visual Studio Code Marketplace
-
-1. Open VS Code.
-2. Go to the **Extensions View**, click the extensions icon on the left sidebar, or use the shortcut `Ctrl+Shift+X`.
-3. Search for **DeepSeek Code Generator**.
-4. Click the **Install** button.
-
-## Basic Usage
-
-1. Open your VS Code.
-2. You can enter the command **Chat with DeepSeek** in the Command Palette to ask questions to DeepSeek.
-
-## Keyboard Shortcuts
-
-If the plugin has keyboard shortcuts, list them here. For example:
-
-- `Ctrl/Cmd+Shift+v`: Trigger a conversation with DeepSeek.
-- `Ctrl/Cmd+Shift+t`: Open the Command Palette and ask DeepSeek questions.
-
-## Configuration
-
-![image](https://i.111666.best/image/ZCxH9Ls2PBfGosxxH8193V.png)
-
-### Not Ollama
-
-```json
-{
-  "deepseek.apiKey": "your-api-key-here"
-}
-```
-
-### Ollama
-
-```json
-{
-    "deepseek.ollamaEndpoint": "http://localhost:11434"
-},
-{
-    "deepseek.ollamaModel": "deepseek-r1:32b"
-}
-```
-
-## API Key Application
-
-Visit [https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys "Apply API") to apply for an API key.
-
-### Support
+## Support & Promotion
 
 #### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
 
