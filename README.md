@@ -32,37 +32,37 @@ DeepSeek Code Generator is a VS Code assistant extension for chatting with DeepS
 
 点击左侧边栏的 DeepSeek 图标开启插件。插件界面右上角提供最近 10 条对话、设置、新对话按钮。
 
-![主界面（新对话界面）](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/01.png)
+![主界面（新对话界面）](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/01.png)
 
 #### 02. 代码解析
 
 选中代码后，让 DeepSeek 解释代码用途、主要行为、关键控制流和潜在 bug。
 
-![代码解析](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/02.png)
+![代码解析](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/02.png)
 
 #### 03. 代码审查
 
 对选中代码进行代码审查，按严重程度输出问题、原因和修复建议。
 
-![代码审查](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/03.png)
+![代码审查](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/03.png)
 
 #### 04. 复制/插入/替换/新建文件按钮
 
 每条 AI 回复右上角提供复制、插入、替换、新建文件按钮。鼠标悬浮时会显示功能提示。
 
-![复制/插入/替换/新建文件按钮](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/04.png)
+![复制/插入/替换/新建文件按钮](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/04.png)
 
 #### 05. 聊天历史
 
 打开历史面板后，可查看最近 10 条对话，并支持清除全部历史。
 
-![聊天历史](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/05.png)
+![聊天历史](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/05.png)
 
 #### 06. 设置项
 
 在 VS Code 设置中配置 DeepSeek API Key、Base URL、Max Tokens 和模型。
 
-![设置项](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/06.png)
+![设置项](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/06.png)
 
 ### 安装
 
@@ -136,37 +136,37 @@ DeepSeek Code Generator is a VS Code assistant extension for chatting with DeepS
 
 Open the extension from the DeepSeek icon in the left Activity Bar. The top-right buttons provide recent conversations, settings, and new chat.
 
-![New Chat](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/01.png)
+![New Chat](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/01.png)
 
 #### 02. Code Explanation
 
 Ask DeepSeek to explain selected code, including behavior, control flow, and possible bugs.
 
-![Code Explanation](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/02.png)
+![Code Explanation](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/02.png)
 
 #### 03. Code Review
 
 Review selected code with severity-based findings and suggested fixes.
 
-![Code Review](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/03.png)
+![Code Review](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/03.png)
 
 #### 04. Response Actions
 
 Each AI response includes action buttons for copy, insert, replace, and new file. Hovering a button shows its tooltip.
 
-![Response Actions](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/04.png)
+![Response Actions](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/04.png)
 
 #### 05. Chat History
 
 Open the history panel to view the latest 10 conversations and clear all history.
 
-![Chat History](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/05.png)
+![Chat History](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/05.png)
 
 #### 06. Settings
 
 Configure DeepSeek API Key, Base URL, Max Tokens, and model in VS Code Settings.
 
-![Settings](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/screenshot/06.png)
+![Settings](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/screenshot/06.png)
 
 ### Installation
 
@@ -244,13 +244,13 @@ Apply for an API key at [https://platform.deepseek.com/api_keys](https://platfor
 
 如果感兴趣，可以通过上面的邮箱或微信联系我。
 
-![AI 群星会学习方向](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/01.jpg)
+![AI 群星会学习方向](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/01.jpg)
 
-![AI 群星会实战训练营](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/02.jpg)
+![AI 群星会实战训练营](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/02.jpg)
 
-![AI 群星会介绍](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/03.jpg)
+![AI 群星会介绍](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/03.jpg)
 
-![AI 群星会扫码加入](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/04.jpg)
+![AI 群星会扫码加入](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/main/media/ad/04.jpg)
 
 ## Support & Promotion
 
