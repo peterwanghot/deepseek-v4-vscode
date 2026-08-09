@@ -233,26 +233,26 @@ Apply for an API key at [https://platform.deepseek.com/api_keys](https://platfor
 
 ![image](https://i.111666.best/image/RCob7GIR7viigc785RHgKh.png)
 
-#### 惊喜预告
+#### AI 群星会
 
-##### 本月有一个智能体开发训练营,包含最近最火爆的N8N,保姆级教学
+如果你希望系统学习 AI 编程、智能体和企业落地实践，可以了解一下 **AI 群星会**。这是一个面向 AI 实战学习者的长期社群，适合想把 AI 真正用到工作、产品、获客增长或副业变现中的开发者和创作者。
 
-**开营周期**：2025.11.11 - 2025.12.31
+- **全年 99 元**：一整年 AI 学习、实战训练和同行交流。
+- **六大学习方向**：AI 编程、智能体、知识库搭建、企业落地、获客增长、副业变现。
+- **持续实战训练**：每月至少 2 期实战训练营，会员可免费参加，完成打卡后退还押金。
+- **长期内容更新**：持续更新干货教程、实战案例、一线经验和工具玩法。
+- **圈子与资源**：连接同行人脉，交流项目落地、商业化和副业机会。
+- **30 天体验保障**：加入后 30 天内不满意可退全款。
 
-##### 训练营介绍
+99 元拿下一整年 AI 学习 + 实战 + 圈子，拒绝做 AI 时代旁观者，一起上车落地变现。
 
-技术更新迭代，怕被行业抛下？智能体特训营带你 50 天掌握核心能力，薪资涨幅 30% 不是梦！从‘技术焦虑’到‘职场竞争力爆棚’，就看你要不要抓住这次机会～
+![AI 群星会学习方向](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/01.jpg)
 
-从智能体入门开始教，涵盖智能体入门、n8n、智能体流量、考证等核心模块，从零开始， 没接触过的小伙伴也不用担心！
+![AI 群星会实战训练营](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/02.jpg)
 
-一天2元钱就能学到当前最前沿的智能体教程，以及实战、考证、变现
+![AI 群星会介绍](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/03.jpg)
 
-![image](https://i.111666.best/image/u6sp7cePcU2SxTpjwVyLfz.png)
-
-![image](https://i.111666.best/image/QVN5UoyKnkx3hRQhGbZSNs.png)
-![image](https://i.111666.best/image/JOjN2NxRpz4osEqFQ83k5O.png)
-![image](https://i.111666.best/image/9z3tofYeXt7CrzlrQv1XQZ.png)
-![image](https://i.111666.best/image/5c7DDE7jXg42m8XYA6XYWo.jpg)
+![AI 群星会扫码加入](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/04.jpg)
 
 ## Support & Promotion
 
@@ -275,3 +275,21 @@ Apply for an API key at [https://platform.deepseek.com/api_keys](https://platfor
 ![image](https://i.111666.best/image/ozGOA21J830HBnPardWTTa.png)
 
 **My Paypal: <dai.david2005@gmail.com>**
+
+#### AI Galaxy Club
+
+If you want to keep learning AI programming, agents, knowledge bases, business adoption, growth, and AI-powered side projects, you can also join **AI Galaxy Club**.
+
+- **99 RMB per year** for AI learning, hands-on practice, and community access.
+- **Six learning tracks**: AI coding, agents, knowledge bases, enterprise adoption, growth, and side-project monetization.
+- **At least two hands-on bootcamps every month**, free for members, with deposit refunds after completing check-ins.
+- **Continuous updates** with tutorials, case studies, practical workflows, and real-world AI implementation notes.
+- **30-day experience guarantee**: full refund if you are not satisfied.
+
+![AI Galaxy Club Learning Tracks](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/01.jpg)
+
+![AI Galaxy Club Bootcamps](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/02.jpg)
+
+![AI Galaxy Club Overview](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/03.jpg)
+
+![Join AI Galaxy Club](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/04.jpg)
