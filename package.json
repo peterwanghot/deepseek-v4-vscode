@@ -4,7 +4,7 @@
   "description": "%extension.description%",
   "version": "2.0.1",
   "author": "Peter' Studio",
-  "publisher": "DavidDai",
+  "publisher": "Peter",
   "repository": {
     "type": "git",
     "url": "https://github.com/peterwanghot/deepseek-v4-vscode.git"
