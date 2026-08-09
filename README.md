@@ -235,24 +235,14 @@ Apply for an API key at [https://platform.deepseek.com/api_keys](https://platfor
 
 #### AI 群星会
 
-如果你希望系统学习 AI 编程、智能体和企业落地实践，可以了解一下 **AI 群星会**。这是一个面向 AI 实战学习者的长期社群，适合想把 AI 真正用到工作、产品、获客增长或副业变现中的开发者和创作者。
+如果你希望继续系统学习 AI 编程、智能体、知识库搭建和企业落地实践，也可以了解一下 **AI 群星会**。这是一个中文 AI 实战学习社群，面向想把 AI 真正用到工作、产品和项目中的开发者与创作者。
 
-- **全年 99 元**：一整年 AI 学习、实战训练和同行交流。
 - **六大学习方向**：AI 编程、智能体、知识库搭建、企业落地、获客增长、副业变现。
-- **持续实战训练**：每月至少 2 期实战训练营，会员可免费参加，完成打卡后退还押金。
-- **长期内容更新**：持续更新干货教程、实战案例、一线经验和工具玩法。
-- **圈子与资源**：连接同行人脉，交流项目落地、商业化和副业机会。
-- **30 天体验保障**：加入后 30 天内不满意可退全款。
+- **实战训练**：定期组织 AI 实战训练营和主题分享。
+- **内容更新**：持续更新教程、案例、工具玩法和落地经验。
+- **同行交流**：连接正在实践 AI 的开发者、创作者和业务同学。
 
-99 元拿下一整年 AI 学习 + 实战 + 圈子，拒绝做 AI 时代旁观者，一起上车落地变现。
-
-![AI 群星会学习方向](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/01.jpg)
-
-![AI 群星会实战训练营](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/02.jpg)
-
-![AI 群星会介绍](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/03.jpg)
-
-![AI 群星会扫码加入](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/04.jpg)
+如果感兴趣，可以通过上面的邮箱或微信联系我。
 
 ## Support & Promotion
 
@@ -276,20 +266,8 @@ Apply for an API key at [https://platform.deepseek.com/api_keys](https://platfor
 
 **My Paypal: <dai.david2005@gmail.com>**
 
-#### AI Galaxy Club
+#### Community
 
-If you want to keep learning AI programming, agents, knowledge bases, business adoption, growth, and AI-powered side projects, you can also join **AI Galaxy Club**.
+I also run a Chinese-language AI learning community focused on AI coding, agents, knowledge bases, business adoption, growth, and practical AI projects.
 
-- **99 RMB per year** for AI learning, hands-on practice, and community access.
-- **Six learning tracks**: AI coding, agents, knowledge bases, enterprise adoption, growth, and side-project monetization.
-- **At least two hands-on bootcamps every month**, free for members, with deposit refunds after completing check-ins.
-- **Continuous updates** with tutorials, case studies, practical workflows, and real-world AI implementation notes.
-- **30-day experience guarantee**: full refund if you are not satisfied.
-
-![AI Galaxy Club Learning Tracks](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/01.jpg)
-
-![AI Galaxy Club Bootcamps](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/02.jpg)
-
-![AI Galaxy Club Overview](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/03.jpg)
-
-![Join AI Galaxy Club](https://raw.githubusercontent.com/peterwanghot/deepseek-v4-vscode/master/media/ad/04.jpg)
+Members get access to hands-on workshops, practical tutorials, case studies, and peer discussions. If you are interested, feel free to contact me by email.
