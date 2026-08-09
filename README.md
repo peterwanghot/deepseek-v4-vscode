@@ -20,6 +20,7 @@ DeepSeek Code Generator 是一个 VS Code 编程助手插件，支持在侧边�
 - **回复操作**：AI 回复支持一键复制、插入到光标位置、替换当前选区、新建文件。
 - **聊天历史**：支持查看最近 10 条对话，并可清除历史。
 - **可配置模型**：支持配置 API Key、Base URL、模型和最大输出 token 数。
+- **界面语言跟随**：会根据 VS Code 的 language 设置决定 DeepSeek 对话界面显示中文或英文。
 - **语言跟随**：默认根据 VS Code 当前显示语言回复，代码、标识符、命令和路径保持原样。
 
 ### 界面截图
@@ -159,6 +160,7 @@ DeepSeek Code Generator is a VS Code assistant extension for chatting with DeepS
 - **Response actions**: Copy, insert at cursor, replace selection, or create a new file from an AI response.
 - **Chat history**: View the latest 10 conversations and clear history when needed.
 - **Configurable model**: Configure API Key, Base URL, model, and max tokens.
+- **Interface language matching**: The DeepSeek chat UI follows the VS Code language setting and displays Chinese or English accordingly.
 - **Language matching**: Replies follow the current VS Code display language while preserving code, identifiers, commands, and paths.
 
 ### Screenshots
