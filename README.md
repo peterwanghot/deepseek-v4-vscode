@@ -124,11 +124,11 @@ DeepSeek Code Generator 是一个 VS Code 编程助手插件，支持在侧边�
 
 #### 微信
 
-![image](https://i.111666.best/image/4emw83S75jILsJtuybd2ov.png)
+![image](media/personal/wechat.png)
 
 #### 打赏通道
 
-![image](https://i.111666.best/image/RCob7GIR7viigc785RHgKh.png)
+![image](media/personal/wechatprize.png)
 
 #### AI 群星会
 
@@ -286,19 +286,19 @@ Apply for an API key at [https://platform.deepseek.com/api_keys](https://platfor
 
 <!-- #### Telegram
 
-![image](https://i.111666.best/image/YNFNyIqBP6OXSjAriY3Mk1.png) -->
+![image](media/personal/tggroup.png) -->
 
 <!-- #### Tg Group
 
-![image](https://i.111666.best/image/y1HINyrJjcUyJodDJ1tFxY.png) -->
+![image](media/personal/tggroup.png) -->
 
 #### Buy me a coffee
 
-![image](https://i.111666.best/image/50L1eDAhyiWuLUB58j50oq.png)
+![image](media/personal/usdt.png)
 
 **My USDT(TRON) Address:TWPocwazdrucz53DDHSTYk8ZZK9aTViw3P**
 
-![image](https://i.111666.best/image/ozGOA21J830HBnPardWTTa.png)
+![image](media/personal/paypal.png)
 
 **My Paypal: <dai.david2005@gmail.com>**
 
