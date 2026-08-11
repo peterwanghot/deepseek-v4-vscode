@@ -126,6 +126,10 @@ DeepSeek Code Generator 是一个 VS Code 编程助手插件，支持在侧边�
 
 ![image](media/personal/wechat.png)
 
+#### 微信群
+
+![image](media/personal/wechatgroup.png)
+
 #### 打赏通道
 
 ![image](media/personal/wechatprize.png)
@@ -284,13 +288,9 @@ Apply for an API key at [https://platform.deepseek.com/api_keys](https://platfor
 
 #### **Email**： [dai.david2005@gmail.com](mailto://dai.david2005@gmail.com)
 
-<!-- #### Telegram
+#### Telegram Group
 
-![image](media/personal/tggroup.png) -->
-
-<!-- #### Tg Group
-
-![image](media/personal/tggroup.png) -->
+![image](media/personal/tggroup.png)
 
 #### Buy me a coffee
 
